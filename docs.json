@@ -11,6 +11,56 @@
   "navigation": {
     "tabs": [
       {
+        "tab": "Mejik Core",
+        "groups": [
+          {
+            "group": "Installation",
+            "pages": [
+              "core/installation/index",
+              "core/installation/quickstart",
+              "core/installation/development"
+            ]
+          },
+          {
+            "group": "Laravel",
+            "pages": [
+              "core/laravel/index",
+              "core/laravel/quickstart",
+              "core/laravel/development"
+            ]
+          },
+          {
+            "group": "Vue",
+            "pages": [
+              "core/vue/index",
+              "core/vue/quickstart",
+              "core/vue/development"
+            ]
+          },
+        ]
+      },
+      {
+        "tab": "Projects",
+        "groups": [
+          {
+            "group": "DMS",
+            "pages": [
+              "projects/dms/index",
+              "projects/dms/quickstart",
+              "projects/dms/development"
+            ]
+          },
+          {
+            "group": "FAS",
+            "pages": [
+              "projects/fas/index",
+              "projects/fas/quickstart",
+              "projects/fas/development"
+            ]
+          },
+        ]
+      },
+      {
         "tab": "Guides",
         "groups": [
           {
