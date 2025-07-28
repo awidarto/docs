@@ -16,25 +16,25 @@
           {
             "group": "Installation",
             "pages": [
-              "core/installation/index",
-              "core/installation/quickstart",
-              "core/installation/development"
+              "mejik-core/installation/index",
+              "mejik-core/installation/quickstart",
+              "mejik-core/installation/development"
             ]
           },
           {
             "group": "Laravel",
             "pages": [
-              "core/laravel/index",
-              "core/laravel/quickstart",
-              "core/laravel/development"
+              "mejik-core/laravel/index",
+              "mejik-core/laravel/quickstart",
+              "mejik-core/laravel/development"
             ]
           },
           {
             "group": "Vue",
             "pages": [
-              "core/vue/index",
-              "core/vue/quickstart",
-              "core/vue/development"
+              "mejik-core/vue/index",
+              "mejik-core/vue/quickstart",
+              "mejik-core/vue/development"
             ]
           }
         ]
