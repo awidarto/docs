@@ -36,7 +36,7 @@
               "core/vue/quickstart",
               "core/vue/development"
             ]
-          },
+          }
         ]
       },
       {
@@ -57,7 +57,7 @@
               "projects/fas/quickstart",
               "projects/fas/development"
             ]
-          },
+          }
         ]
       },
       {
