@@ -1,0 +1,242 @@
+Tentu saja. Ini adalah ide yang sangat bagus untuk membuat dokumentasi ini lebih mudah diakses.
+
+Berikut adalah panduan lengkap untuk perintah `ConvertXlsxMatrixTplBlade` dalam Bahasa Indonesia.
+
+---
+
+## Dokumentasi: Perintah `convert:xlsx-matrix-tpl2blade`
+
+### 1. Gambaran Umum
+
+Perintah `convert:xlsx-matrix-tpl2blade` adalah sebuah *Artisan command* yang canggih, dirancang untuk menggunakan file Microsoft Excel (`.xlsx`) sebagai template yang kompleks. Perintah ini dapat beroperasi dalam dua mode utama:
+
+1.  **Penggabungan Data (Data Merging):** Mengambil template XLSX dan file data JSON untuk menghasilkan dokumen akhir yang sudah terisi. Hasilnya bisa berupa file XLSX baru (cocok untuk membuat laporan) atau file HTML yang sudah memiliki gaya (styling).
+2.  **Konversi Templat Blade:** Secara cerdas mengubah struktur dan tata letak dari template XLSX langsung menjadi file Laravel Blade (`.blade.php`) yang bersih dan mudah dibaca manusia. Ini memungkinkan Anda untuk merancang *view* yang dinamis dan kompleks secara visual di dalam spreadsheet.
+
+Panduan ini akan mencakup cara membuat template, menyusun data, dan menggunakan berbagai opsi perintah.
+
+---
+
+### 2. Panduan Pengguna (Superuser Guide)
+
+Bagian ini ditujukan untuk pengguna yang akan membuat template dan menjalankan perintah.
+
+#### 2.1. Tanda Tangan Perintah (Command Signature)
+
+Struktur dasar perintah adalah sebagai berikut:
+
+```bash
+php artisan convert:xlsx-matrix-tpl2blade --template=<path> --out=<path> [options]
+```
+
+**Argumen yang Wajib Diisi:**
+
+| Argumen | Deskripsi | Contoh |
+| :--- | :--- | :--- |
+| `--template` | Path lengkap menuju file template `.xlsx`. | `--template="storage/app/templates/memo.xlsx"` |
+| `--out` | Path lengkap untuk file hasil yang akan dibuat. | `--out="storage/app/reports/memo-final.xlsx"` |
+
+**Argumen Opsional:**
+
+| Argumen | Deskripsi |
+| :--- | :--- |
+| `--data` | Path lengkap menuju file data `.json`. **Wajib** untuk format `html` dan `xlsx`. |
+| `--format` | Menentukan format output. Bisa `xlsx`, `html`, atau `blade`. (Default: `html`) |
+| `--body-only`| Untuk format `html` atau `blade`. Menghasilkan hanya konten inti tanpa pembungkus layout `@extends`. |
+| `--section` | Untuk format `html` atau `blade`. Menentukan nama `@section` Blade yang akan digunakan. (Default: `content`) |
+| `--lean` | Hanya untuk format `blade`. Menghasilkan `<table>` yang bersih dan semantik, bukan konversi literal yang berantakan. **Sangat Direkomendasikan.** |
+
+---
+
+#### 2.2. Membuat File Data (`data.json`)
+
+Perintah ini menggunakan file JSON standar sebagai sumber datanya. Struktur JSON harus cocok dengan *key* yang Anda gunakan di dalam template.
+
+**Contoh `data.json`:**
+```json
+{
+    "docNo": "123/MEMO/IV/2024",
+    "addressedTo": "John Doe, Marketing Manager",
+    "from": "IT Department",
+    "subject": "Deployment of New CRM System",
+    "body": "Ini adalah pemberitahuan bahwa sistem CRM baru akan di-deploy minggu depan...",
+    "ccTo": [
+        "Jane Smith, Operations Head",
+        "Jake Carson, Finance Dept. Head"
+    ],
+    "bccTo": [
+        "Maria Preston, Finance Vice President"
+    ],
+    "attachments": [
+        {
+            "label": "Panduan Pelatihan.pdf",
+            "url": "https://example.com/docs/panduan.pdf"
+        },
+        {
+            "label": "Jadwal Deployment.xlsx",
+            "url": "https://example.com/docs/jadwal.xlsx"
+        }
+    ],
+    "items": [
+        {
+            "no": 1,
+            "itemName": "Laptop Dell XPS 15",
+            "qty": 2
+        },
+        {
+            "no": 2,
+            "itemName": "Monitor 27\" 4K",
+            "qty": 2
+        }
+    ],
+    "place": "Jakarta",
+    "docDate": "28 Juli 2025",
+    "department": "IT Operations",
+    "signerName": "Charlie Brown",
+    "signerTitle": "IT Director"
+}
+```
+
+---
+
+#### 2.3. Membuat Templat XLSX
+
+Templat XLSX adalah tempat Anda merancang tata letak dokumen. Anda bisa menggunakan format Excel standar (tebal, warna, *merged cells*, lebar kolom, dll.), dan perintah ini akan menjaganya. Kekuatannya datang dari direktif khusus yang diletakkan di dalam sel.
+
+##### **A. Placeholder Sederhana**
+-   **Sintaks:** `{{ key }}`
+-   **Tujuan:** Mengganti placeholder dengan nilai string atau angka sederhana dari file JSON. Spasi di dalam kurung kurawal akan diabaikan.
+-   **Contoh:** Sebuah sel dengan `{{ docNo }}` akan diganti menjadi `"123/MEMO/IV/2024"`.
+
+##### **B. Daftar Sederhana (`list`)**
+-   **Sintaks:** `{{ list:key }}`
+-   **Tujuan:** Mengganti satu sel menjadi daftar item vertikal dari sebuah *array* sederhana di file JSON.
+-   **Contoh:** Jika `ccTo` adalah `["Jane", "Jake"]`, sebuah sel dengan `{{ list:ccTo }}` akan diperluas menjadi dua baris. Baris pertama berisi "Jane" dan baris kedua berisi "Jake".
+
+##### **C. Daftar URL (`urllist`)**
+-   **Sintaks:** `{{ urllist:key }}`
+-   **Tujuan:** Mengganti satu sel menjadi daftar *hyperlink* vertikal yang bisa diklik. Data JSON harus berupa *array of objects*, di mana setiap objek memiliki *key* `label` dan `url`.
+-   **Contoh:** Digunakan dengan data `attachments` dari contoh JSON, ini akan membuat dua baris dengan tautan yang bisa diklik.
+
+##### **D. Daftar Matriks (Beberapa Daftar dalam Satu Baris)**
+-   **Aturan:** Perintah ini dapat menangani beberapa direktif `list` atau `urllist` dalam satu baris yang sama. Ia akan secara otomatis memperluas baris sesuai tinggi daftar yang *paling panjang*, dan membiarkan sel kosong untuk daftar yang lebih pendek.
+-   **Contoh Templat:**
+    | | C | D | E |
+    |---|---|---|---|
+    | **10** | `{{ list:ccTo }}` | BCC | `{{ list:bccTo }}` |
+-   **Hasil:** Ini akan diperluas sesuai tinggi daftar terpanjang (`ccTo` atau `bccTo`), dengan benar menempatkan label "BCC" di baris pertama dan menyejajarkan semua item daftar.
+
+##### **E. Tabel Data (`@tablehead` & `@tabledata`)**
+-   **Tujuan:** Untuk menghasilkan tabel multi-baris dan multi-kolom dari sebuah *array of objects*.
+-   **Sintaks & Aturan:**
+    1.  Buat sebuah baris "header". Di sel `A` pada baris ini, tulis teks **`@tablehead`**. Di sel-sel sebelah kanannya, tulis judul kolom yang terlihat (misalnya, "Nama Produk", "Jumlah").
+    2.  Buat sebuah baris "template data". Di sel `A` pada baris ini, tulis direktif **`@tabledata:key`**, di mana `key` adalah nama dari *array of objects* di file JSON Anda (misalnya, `@tabledata:items`).
+    3.  Di sel-sel sebelah kanannya, tulis *key* yang sesuai dari objek JSON Anda (misalnya, `itemName`, `qty`).
+-   **Contoh Templat:**
+    | | A | B | C |
+    |---|---|---|---|
+    | **18**| `@tablehead` | No | Item Produk |
+    | **19**| `@tabledata:items` | no | itemName |
+
+##### **F. Direktif Blade (Hanya untuk `--format=blade`)**
+-   **Tujuan:** Untuk mengubah struktur spreadsheet menjadi template Blade yang dinamis.
+-   **Sintaks & Aturan:**
+    1.  Letakkan direktif kontrol Blade (misalnya, `@if`, `@foreach`, `@endif`) di sebuah sel, biasanya di kolom `A`.
+    2.  Baris yang berisi direktif tersebut **tidak boleh memiliki konten lain**. Perintah akan mendeteksi ini dan memperlakukan seluruh baris sebagai direktif murni.
+-   **Contoh Templat:**
+    | | A | B | C |
+    |---|---|---|---|
+    | **16**| `@if(count($items) > 0)` | | |
+    | **17**| No | Item Produk | Jumlah |
+    | **18**| `@foreach($items as $item)` | | |
+    | **19**| `{{ $item->no }}` | `{{ $item->itemName }}` | `{{ $item->qty }}` |
+    | **20**| `@endforeach` | | |
+    | **21**| `@else` | | |
+    | **22**| Tidak ada item ditemukan | | |
+    | **23**| `@endif` | | |
+
+---
+
+#### 2.4. Menghasilkan Output: Format dan Opsi
+
+##### **Format: `xlsx`**
+Menghasilkan file `.xlsx` baru yang sudah terisi data. Semua gaya dari template akan dipertahankan dengan sempurna.
+```bash
+php artisan convert:xlsx-matrix-tpl2blade \
+  --template="templates/memo.xlsx" \
+  --data="data.json" \
+  --out="reports/memo-final.xlsx" \
+  --format=xlsx
+```
+
+##### **Format: `html`**
+Menghasilkan dokumen HTML bergaya berdasarkan data yang digabungkan.
+```bash
+# Output HTML dasar
+php artisan convert:xlsx-matrix-tpl2blade \
+  --template="templates/memo.xlsx" \
+  --data="data.json" \
+  --out="reports/memo.html" \
+  --format=html
+
+# Dengan opsi layout (membuat file Blade)
+php artisan convert:xlsx-matrix-tpl2blade \
+  --template="templates/memo.xlsx" \
+  --data="data.json" \
+  --out="resources/views/reports/memo.blade.php" \
+  --format=html \
+  --section="main-content"
+```
+
+##### **Format: `blade`**
+Mengubah struktur template langsung menjadi file `.blade.php`, dengan mengabaikan opsi `--data`.
+```bash
+# Mode "lean" yang direkomendasikan untuk output yang bersih
+php artisan convert:xlsx-matrix-tpl2blade \
+  --template="templates/memo-blade.xlsx" \
+  --out="resources/views/memos/show.blade.php" \
+  --format=blade \
+  --lean
+
+# Mode "lean", tapi tanpa pembungkus layout (untuk @include)
+php artisan convert:xlsx-matrix-tpl2blade \
+  --template="templates/memo-blade.xlsx" \
+  --out="resources/views/memos/_table.blade.php" \
+  --format=blade \
+  --lean \
+  --body-only
+```
+
+---
+
+### 3. Panduan Pengembang (Developer Guide)
+
+Bagian ini untuk pengembang yang mungkin perlu memelihara atau memperluas perintah ini.
+
+#### 3.1. Dependensi
+-   `phpoffice/phpspreadsheet`: Pustaka inti untuk membaca dan menulis file `.xlsx`.
+-   PHP `ext-dom`: Digunakan untuk mem-parsing dan memanipulasi HTML saat membuat file Blade.
+
+#### 3.2. Konsep Arsitektur Inti
+
+Perintah ini menggunakan dua arsitektur yang berbeda tergantung pada format output yang diinginkan.
+
+##### **A. Penggabungan Data (`xlsx`, `html`): Sistem Tiga Langkah (Three-Pass System)**
+Untuk menangani *styling* dan template yang kompleks secara andal, proses penggabungan data menggunakan sistem tiga langkah:
+1.  **Langkah 1 (Analisis & Buffering Gaya):** Metode `analyzeTemplateAndBuildStyleBuffer` memindai seluruh template. Ia membangun sebuah peta dari semua direktif dinamis (`{{...}}`, `@table...`) dan, yang terpenting, membuat **buffer gaya** yang *immutable* (tidak dapat diubah). Buffer ini adalah *associative array* di mana *key*-nya adalah konten teks statis dari sebuah sel (misalnya, "MEMO", "Requested By") dan *value*-nya adalah representasi *array* dari gaya sel tersebut. Ini mencegah masalah yang terkait dengan referensi objek PHP.
+2.  **Langkah 2 (Komposisi Konten):** Metode `composeOutput` membangun spreadsheet baru yang kosong. Ia mengulangi template, dan dengan menggunakan peta direktif, ia mengisi lembar baru dengan **konten teks akhir yang benar**. Ia menangani logika kompleks untuk memperluas daftar dan tabel ke dimensi akhirnya. **Tidak ada gaya yang diterapkan pada langkah ini.**
+3.  **Langkah 3 (Penerapan Gaya):** Metode `applyStylesFromBuffer` melakukan langkah terakhir pada lembar output yang sudah tersusun. Ia membaca konten teks dari setiap sel, mencarinya di buffer gaya, dan menerapkan gaya yang sesuai.
+
+Pemisahan antara konten dan presentasi ini adalah kunci keandalan perintah ini.
+
+##### **B. Pembuatan Blade (`blade`): Sistem Parser**
+Logika pembuatan Blade adalah sebuah konverter template-ke-template.
+-   **Mode Literal (default):** Mode ini menggunakan `PhpSpreadsheet\Writer\Html` untuk membuat terjemahan langsung yang verbose dari grid Excel. Kemudian menggunakan `DOMDocument` untuk menemukan dan mengekstrak baris `@directive`. Ini cepat tetapi menghasilkan HTML yang berantakan.
+-   **Mode Lean (`--lean`):** Ini adalah mode yang superior. Fungsi `generateLeanBladeFile` mengimplementasikan sebuah **parser blok yang sadar-status (state-aware)**. Ia mengulangi baris spreadsheet dan dapat mengenali awal (`@if`, `@foreach`) dan akhir (`@endif`, `@endforeach`) dari struktur kontrol Blade. Ia memproses blok-blok ini secara keseluruhan, menghasilkan elemen `<tr>` yang bersih dan terindentasi yang dibungkus dalam direktif yang benar. Ini menghasilkan file Blade akhir yang semantik dan mudah dibaca manusia.
+
+#### 3.3. Memperluas Perintah
+Untuk menambahkan direktif baru (misalnya, `{{ imagelist:key }}`), Anda perlu:
+1.  **Perbarui `analyzeTemplateAndBuildStyleBuffer`:** Tambahkan `elseif` baru ke rantai regex untuk mendeteksi direktif baru Anda dan menambahkannya ke `$map`.
+2.  **Perbarui `isExpansionRow`:** Tambahkan tipe direktif baru Anda ke pemeriksaan jika itu adalah ekspansi vertikal.
+3.  **Buat Fungsi `expand...` Baru:** Buat fungsi seperti `expandImageListBlock` yang berisi logika spesifik untuk menangani data direktif baru Anda dan me-rendernya ke lembar output.
+4.  **Perbarui `composeOutput`:** Tambahkan panggilan ke fungsi ekspansi baru Anda ketika direktifnya ditemukan di peta.

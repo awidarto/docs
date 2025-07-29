@@ -1,0 +1,241 @@
+---
+title: "XLSX Converter"
+description: "Converts formatted Excel ( .xlsx ) template file into data populated Excel for download and report, also option to convert to blade file for Laravel developer"
+---
+
+## Documentation: `convert:xlsx-matrix-tpl2blade` Command
+
+### 1. Overview
+
+The `convert:xlsx-matrix-tpl2blade` command is a powerful Artisan tool designed to use a Microsoft Excel (`.xlsx`) file as a sophisticated template. It can operate in two primary modes:
+
+1.  **Data Merging:** It takes the XLSX template and a JSON data file to produce a final, populated document. The output can be either a new XLSX file (perfect for generating reports) or a styled HTML file.
+2.  **Blade Template Conversion:** It intelligently converts the structure and layout of the XLSX template directly into a clean, human-readable Laravel Blade file (`.blade.php`), allowing you to design complex, dynamic views visually in a spreadsheet.
+
+This guide will cover how to create templates, structure data, and use the command's various options.
+
+---
+
+### 2. Superuser Guide
+
+This section is for users who will be creating templates and running the command.
+
+#### 2.1. The Command Signature
+
+The command has the following structure:
+
+```bash
+php artisan convert:xlsx-matrix-tpl2blade --template=<path> --out=<path> [options]
+```
+
+**Required Arguments:**
+
+| Argument | Description | Example |
+| :--- | :--- | :--- |
+| `--template` | The full path to the input `.xlsx` template file. | `--template="storage/app/templates/memo.xlsx"` |
+| `--out` | The full path for the generated output file. | `--out="storage/app/reports/memo-final.xlsx"` |
+
+**Optional Arguments:**
+
+| Argument | Description |
+| :--- | :--- |
+| `--data` | The full path to the `.json` data file. **Required** for `html` and `xlsx` formats. |
+| `--format` | Specifies the output format. Can be `xlsx`, `html`, or `blade`. (Default: `html`) |
+| `--body-only`| For `html` or `blade` formats. Outputs only the core content without the `@extends` layout wrapper. |
+| `--section` | For `html` or `blade` formats. Specifies the name of the Blade `@section` to use. (Default: `content`) |
+| `--lean` | For `blade` format only. Generates a clean, semantic `<table>` instead of a literal, verbose conversion. **Highly Recommended.** |
+
+---
+
+#### 2.2. Creating the Data File (`data.json`)
+
+The command uses a standard JSON file to source its data. The structure of the JSON should match the keys you use in your template.
+
+**Example `data.json`:**
+```json
+{
+    "docNo": "123/MEMO/IV/2024",
+    "addressedTo": "John Doe, Marketing Manager",
+    "from": "IT Department",
+    "subject": "Deployment of New CRM System",
+    "body": "This is to inform you that the new CRM system will be deployed...",
+    "ccTo": [
+        "Jane Smith, Operations Head",
+        "Jake Carson, Finance Dept. Head"
+    ],
+    "bccTo": [
+        "Maria Preston, Finance Vice President"
+    ],
+    "attachments": [
+        {
+            "label": "Training Manual.pdf",
+            "url": "https://example.com/docs/manual.pdf"
+        },
+        {
+            "label": "Deployment Schedule.xlsx",
+            "url": "https://example.com/docs/schedule.xlsx"
+        }
+    ],
+    "items": [
+        {
+            "no": 1,
+            "itemName": "Laptop Dell XPS 15",
+            "qty": 2
+        },
+        {
+            "no": 2,
+            "itemName": "Monitor 27\" 4K",
+            "qty": 2
+        }
+    ],
+    "place": "Jakarta",
+    "docDate": "28 July 2025",
+    "department": "IT Operations",
+    "signerName": "Charlie Brown",
+    "signerTitle": "IT Director"
+}
+```
+
+---
+
+#### 2.3. Creating the XLSX Template
+
+The XLSX template is where you design your document's layout. You can use standard Excel formatting (bold, colors, merged cells, column widths, etc.), and the command will preserve it. The power comes from special directives placed inside cells.
+
+##### **A. Simple Placeholders**
+-   **Syntax:** `{{ key }}`
+-   **Purpose:** Replaces the placeholder with a simple string or number value from the JSON file. Whitespace inside the braces is ignored.
+-   **Example:** A cell with `{{ docNo }}` will be replaced by `"123/MEMO/IV/2024"`.
+
+##### **B. Simple Lists (`list`)**
+-   **Syntax:** `{{ list:key }}`
+-   **Purpose:** Replaces a single cell with a vertical list of items from a simple array in the JSON file.
+-   **Example:** If `ccTo` is `["Jane", "Jake"]`, a cell with `{{ list:ccTo }}` will expand into two rows. The first row will contain "Jane" and the second will contain "Jake".
+
+##### **C. URL Lists (`urllist`)**
+-   **Syntax:** `{{ urllist:key }}`
+-   **Purpose:** Replaces a single cell with a vertical list of clickable hyperlinks. The JSON data must be an array of objects, each with a `label` and `url` key.
+-   **Example:** Used with the `attachments` data in the example JSON, this will create two rows with clickable links.
+
+##### **D. Matrix Lists (Multiple Lists on One Row)**
+-   **Rule:** The command can handle multiple `list` or `urllist` directives on the same row. It will automatically expand to the height of the *longest* list, leaving blank cells for the shorter lists.
+-   **Example Template:**
+    | | C | D | E |
+    |---|---|---|---|
+    | **10** | `{{ list:ccTo }}` | BCC | `{{ list:bccTo }}` |
+-   **Result:** This will expand to the height of the longest list (`ccTo` or `bccTo`), correctly placing the "BCC" label in the first row and aligning all list items.
+
+##### **E. Data Tables (`@tablehead` & `@tabledata`)**
+-   **Purpose:** To generate a multi-row, multi-column table from an array of objects.
+-   **Syntax & Rules:**
+    1.  Create a "header" row. In cell `A` of this row, put the text **`@tablehead`**. In the cells to the right, put the visible column titles (e.g., "Product Name", "Quantity").
+    2.  Create a "data template" row immediately below or somewhere else. In cell `A` of this row, put the directive **`@tabledata:key`**, where `key` is the name of the array of objects in your JSON file (e.g., `@tabledata:items`).
+    3.  In the cells to the right, put the corresponding keys from your JSON objects (e.g., `itemName`, `qty`).
+-   **Example Template:**
+    | | A | B | C |
+    |---|---|---|---|
+    | **18**| `@tablehead` | No | Item Produk |
+    | **19**| `@tabledata:items` | no | itemName |
+
+##### **F. Blade Directives (for `--format=blade` only)**
+-   **Purpose:** To convert the spreadsheet structure into a dynamic Blade template.
+-   **Syntax & Rules:**
+    1.  Place any Blade control structure directive (e.g., `@if`, `@foreach`, `@endif`) in a cell, usually in column `A`.
+    2.  The row containing the directive should have **no other content**. The command will detect this and treat the entire row as a raw directive.
+-   **Example Template:**
+    | | A | B | C |
+    |---|---|---|---|
+    | **16**| `@if(count($items) > 0)` | | |
+    | **17**| No | Item Produk | Jumlah |
+    | **18**| `@foreach($items as $item)` | | |
+    | **19**| `{{ $item->no }}` | `{{ $item->itemName }}` | `{{ $item->qty }}` |
+    | **20**| `@endforeach` | | |
+    | **21**| `@else` | | |
+    | **22**| No Item Found | | |
+    | **23**| `@endif` | | |
+
+---
+
+#### 2.4. Generating Output: Formats and Options
+
+##### **Format: `xlsx`**
+Generates a new, data-filled `.xlsx` file. It perfectly preserves all styling from the template.
+```bash
+php artisan convert:xlsx-matrix-tpl2blade \
+  --template="templates/memo.xlsx" \
+  --data="data.json" \
+  --out="reports/memo-final.xlsx" \
+  --format=xlsx
+```
+
+##### **Format: `html`**
+Generates a styled HTML document based on the merged data.
+```bash
+# Basic HTML output
+php artisan convert:xlsx-matrix-tpl2blade \
+  --template="templates/memo.xlsx" \
+  --data="data.json" \
+  --out="reports/memo.html" \
+  --format=html
+
+# With layout options (creates a Blade file)
+php artisan convert:xlsx-matrix-tpl2blade \
+  --template="templates/memo.xlsx" \
+  --data="data.json" \
+  --out="resources/views/reports/memo.blade.php" \
+  --format=html \
+  --section="main-content"
+```
+
+##### **Format: `blade`**
+Converts the template structure directly into a `.blade.php` file, ignoring the `--data` option.
+```bash
+# Recommended "lean" mode for clean output
+php artisan convert:xlsx-matrix-tpl2blade \
+  --template="templates/memo-blade.xlsx" \
+  --out="resources/views/memos/show.blade.php" \
+  --format=blade \
+  --lean
+
+# Lean mode, but without the layout wrapper (for @include)
+php artisan convert:xlsx-matrix-tpl2blade \
+  --template="templates/memo-blade.xlsx" \
+  --out="resources/views/memos/_table.blade.php" \
+  --format=blade \
+  --lean \
+  --body-only
+```
+
+---
+
+### 3. Developer Guide
+
+This section is for developers who may need to maintain or extend the command.
+
+#### 3.1. Dependencies
+-   `phpoffice/phpspreadsheet`: The core library for reading and writing `.xlsx` files.
+-   PHP `ext-dom`: Used for parsing and manipulating HTML when generating Blade files.
+
+#### 3.2. Core Architectural Concepts
+
+The command uses two distinct architectures depending on the desired output format.
+
+##### **A. Data Merging (`xlsx`, `html`): The Three-Pass System**
+To robustly handle styling and complex templates, the data merging process uses a three-pass system:
+1.  **Pass 1 (Analysis & Style Buffering):** The `analyzeTemplateAndBuildStyleBuffer` method scans the entire template. It builds a map of all dynamic directives (`{{...}}`, `@table...`) and, crucially, creates an immutable **style buffer**. This buffer is an associative array where the key is the static text content of a cell (e.g., "MEMO", "Requested By") and the value is an array representation of that cell's style. This prevents issues with PHP object references.
+2.  **Pass 2 (Content Composition):** The `composeOutput` method builds a new, blank spreadsheet. It iterates through the template, and using the directive map, it populates the new sheet with the **correct final text content**. It handles the complex logic of expanding lists and tables to their final dimensions. **It does not apply any styles in this pass.**
+3.  **Pass 3 (Styling):** The `applyStylesFromBuffer` method makes a final pass over the fully composed output sheet. It reads the text content of each cell, looks it up in the style buffer, and applies the corresponding style.
+
+This separation of concerns (content vs. presentation) is the key to the command's robustness.
+
+##### **B. Blade Generation (`blade`): The Parser System**
+The Blade generation logic is a template-to-template converter.
+-   **Literal Mode (default):** This mode uses `PhpSpreadsheet\Writer\Html` to create a direct, verbose translation of the Excel grid. It then uses `DOMDocument` to find and extract `@directive` rows. This is fast but produces messy HTML.
+-   **Lean Mode (`--lean`):** This is the superior mode. The `generateLeanBladeFile` function implements a **state-aware block parser**. It iterates through the spreadsheet rows and can recognize the start (`@if`, `@foreach`) and end (`@endif`, `@endforeach`) of Blade control structures. It processes these blocks as a whole, generating clean, indented `<tr>` elements wrapped in the correct directives. This results in a final Blade file that is semantic and human-readable.
+
+#### 3.3. Extending the Command
+To add a new directive (e.g., `{{ imagelist:key }}`), you would need to:
+1.  **Update `analyzeTemplateAndBuildStyleBuffer`:** Add a new `elseif` to the regex chain to detect your new directive and add it to the `$map`.
+2.  **Update `isExpansionRow`:** Add your new directive type to the check if it's a vertical expansion.
+3.  **Create a New `expand...` Function:** Create a function like `expandImageListBlock` that contains the specific logic for handling your new directive's data and rendering it onto the output sheet.
+4.  **Update `composeOutput`:** Add a call to your new expansion function when its directive is found in the map.

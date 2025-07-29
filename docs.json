@@ -26,7 +26,8 @@
             "pages": [
               "mejik-core/laravel/index",
               "mejik-core/laravel/quickstart",
-              "mejik-core/laravel/development"
+              "mejik-core/laravel/development",
+              "mejik-core/laravel/tools/xlsxconverter"
             ]
           },
           {
