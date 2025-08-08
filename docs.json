@@ -36,7 +36,8 @@
             "pages": [
               "mejik-core/vue/index",
               "mejik-core/vue/quickstart",
-              "mejik-core/vue/development"
+              "mejik-core/vue/development",
+              "mejik-core/vue/components/inlineediting"
             ]
           }
         ]
