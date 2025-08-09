@@ -28,7 +28,10 @@
               "mejik-core/laravel/quickstart",
               "mejik-core/laravel/development",
               "mejik-core/laravel/tools/xlsxconverter",
-              "mejik-core/laravel/tools/id/xlsxconverter"
+              "mejik-core/laravel/tools/id/xlsxconverter",
+              "mejik-core/laravel/tools/module-gen/generator",
+              "mejik-core/laravel/tools/module-gen/subgenerator",
+              "mejik-core/laravel/tools/module-gen/guide"
             ]
           },
           {
