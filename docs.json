@@ -24,7 +24,8 @@
           {
             "group": "Performance",
             "pages": [
-              "mejik-core/test-tools/db-analysis-tool"
+              "mejik-core/test-tools/db-analysis-tool",
+              "mejik-core/test-tools/process-analysis-tool"
             ]
           },
           {
