@@ -22,6 +22,12 @@
             ]
           },
           {
+            "group": "Performance",
+            "pages": [
+              "mejik-core/test-tools/db-analysis-tool"
+            ]
+          },
+          {
             "group": "Laravel",
             "pages": [
               "mejik-core/laravel/index",
