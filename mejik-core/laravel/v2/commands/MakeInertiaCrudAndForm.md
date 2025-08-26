@@ -613,7 +613,7 @@ All Vue.js stub files have been updated to match current working patterns in the
 
 #### **Form Component Architecture**
 - **CreateForm.vue**: Standalone form component for create operations
-- **EditForm.vue**: Standalone form component for edit operations
+- **EditForm.vue**: Standalone form component for edit operations  
 - **ShowView.vue**: Display component for viewing entity details
 
 #### **Generated Form Fields**

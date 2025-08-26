@@ -32,7 +32,9 @@
             "group": "Commands ( v2 )",
             "pages": [
               "mejik-core/laravel/v2/commands/make-inertia-crud-and-form",
-              "mejik-core/laravel/v2/commands/make-inertia-columns"
+              "mejik-core/laravel/v2/commands/make-inertia-columns",
+              "mejik-core/laravel/v2/commands/make-inertia-form",
+              "mejik-core/laravel/v2/stubs/route-and-model-stubs"
             ]
           },
           {
