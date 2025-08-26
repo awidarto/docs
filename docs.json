@@ -38,7 +38,13 @@
               "mejik-core/laravel/tools/id/xlsxconverter",
               "mejik-core/laravel/tools/module-gen/generator",
               "mejik-core/laravel/tools/module-gen/subgenerator",
-              "mejik-core/laravel/tools/module-gen/guide"
+              "mejik-core/laravel/tools/module-gen/guide",
+              "mejik-core/laravel/v2/admin-controller-guide-en",
+              "mejik-core/laravel/v2/admin-controller-guide-id",
+              "mejik-core/laravel/v2/layout-navigation-en",
+              "mejik-core/laravel/v2/layout-navigation-id",
+              "mejik-core/laravel/v2/navigation-config-guide-en"
+
             ]
           },
           {
