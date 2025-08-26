@@ -29,6 +29,13 @@
             ]
           },
           {
+            "group": "Commands ( v2 )",
+            "pages": [
+              "mejik-core/laravel/v2/commands/make-inertia-crud-and-form",
+              "mejik-core/laravel/v2/commands/make-inertia-columns"
+            ]
+          },
+          {
             "group": "Laravel",
             "pages": [
               "mejik-core/laravel/index",
