@@ -44,6 +44,8 @@
               "mejik-core/laravel/quickstart",
               "mejik-core/laravel/development",
               "mejik-core/laravel/tools/xlsxconverter",
+              "mejik-core/laravel/tools/docx/docx_data_merge.mdx",
+              "mejik-core/laravel/tools/docx/docx_merge_convert.mdx",
               "mejik-core/laravel/tools/id/xlsxconverter",
               "mejik-core/laravel/tools/module-gen/generator",
               "mejik-core/laravel/tools/module-gen/subgenerator",
@@ -53,7 +55,6 @@
               "mejik-core/laravel/v2/layout-navigation-en",
               "mejik-core/laravel/v2/layout-navigation-id",
               "mejik-core/laravel/v2/navigation-config-guide-en"
-
             ]
           },
           {
