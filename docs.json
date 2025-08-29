@@ -46,6 +46,7 @@
               "mejik-core/laravel/tools/xlsxconverter",
               "mejik-core/laravel/tools/docx/docx_data_merge.mdx",
               "mejik-core/laravel/tools/docx/docx_merge_convert.mdx",
+              "mejik-core/laravel/tools/xlsx/xlsx_template_example.mdx",
               "mejik-core/laravel/tools/id/xlsxconverter",
               "mejik-core/laravel/tools/module-gen/generator",
               "mejik-core/laravel/tools/module-gen/subgenerator",
