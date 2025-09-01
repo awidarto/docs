@@ -269,13 +269,13 @@ Replaces a tag with an image.
 Shows or hides a block of content based on a boolean value.
 
 *   **Syntax**:
-```
+```javascript
 ${block_name}
-Content to show/hide. Can contain other variables like ${some_var}.
+Content to show/hide. Can contain other variables like `${some_var}`.
 ${/block_name}
     ```
 *   **Example Template**:
-```
+```javascript
 ${if_bill}
 Bill to:
 ${bill_name}
@@ -301,7 +301,7 @@ Dynamically creates table rows from an array of objects.
 
 | No | Item | Quantity | Amount |
 | :--- | :--- | :--- | :--- |
-| ${item.no} | ${item.name} | ${item.quantity} | ${item.amount} |
+| `${item.no}` | `${item.name}` | `${item.quantity}` | `${item.amount}` |
 
 *   **How it Works**: The code finds the row containing `${item.no}` (or any variable you choose as the anchor) and duplicates it for every object in the `item_list` array.
 *   **Example JSON**:
@@ -418,13 +418,13 @@ Mengganti sebuah tag dengan gambar.
 Menampilkan atau menyembunyikan sebuah blok konten berdasarkan nilai boolean.
 
 *   **Sintaks**:
-```
+```javascript
 ${nama_blok}
-Konten yang akan ditampilkan/disembunyikan. Bisa berisi variabel lain seperti ${var_lain}.
+Konten yang akan ditampilkan/disembunyikan. Bisa berisi variabel lain seperti `${var_lain}`.
 ${/nama_blok}
     ```
 *   **Contoh Templat**:
-```
+```javascript
 ${if_bill}
 Tagihan untuk:
 ${bill_name}
@@ -450,7 +450,7 @@ Membuat baris tabel secara dinamis dari sebuah array objek.
 
 | No | Barang | Jumlah | Total |
 | :--- | :--- | :--- | :--- |
-| ${item.no} | ${item.name} | ${item.quantity} | ${item.amount} |
+| `${item.no}` | `${item.name}` | `${item.quantity}` | `${item.amount}` |
 
 *   **Cara Kerja**: Kode akan menemukan baris yang berisi `${item.no}` (atau variabel apa pun yang Anda pilih sebagai jangkar) dan menduplikasinya untuk setiap objek di dalam array `item_list`.
 *   **Contoh JSON**:

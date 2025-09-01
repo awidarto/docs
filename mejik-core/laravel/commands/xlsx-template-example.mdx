@@ -1,7 +1,8 @@
 ---
 title: "XLSX Template Example"
-description: "XLSX template example and structure"
+description: "XLSX template example & guide"
 ---
+
 Here is a visual representation of what the `report_template.xlsx` file would look like in a spreadsheet application like Excel or Google Sheets, followed by a breakdown of each key element.
 
 ### Visual Representation of the XLSX Template
@@ -10,15 +11,15 @@ Imagine you are looking at this in Microsoft Excel:
 
 | | **A** | **B** | **C** | **D** |
 | :--- | :--- | :--- | :--- | :--- |
-| **1**| | <font size="5"><b>Monthly Sales Report</b></font> (Merged across B:D) | | |
+| **1**| | <b>Monthly Sales Report</b> (Merged across B:D) |
 | **2**| | | | |
 | **3**| **Month:** | `${report_details.month_name}` | | |
 | **4**| **Generated On:** | `${generation_date}` | | |
 | **5**| | | | |
-| **6**| <font style="background-color:#D3D3D3;"><b>#</b></font> | <font style="background-color:#D3D3D3;"><b>Product Name</b></font> | <font style="background-color:#D3D3D3;"><b>Units Sold</b></font> | <font style="background-color:#D3D3D3;"><b>Revenue</b></font> |
+| **6**| # | <b>Product Name</b> | <b>Units Sold</b> | <b>Revenue</b> |
 | **7**| `${foreach:sales_data}` | `${item.product_name}` | `${item.units_sold}` | `${item.revenue}` |
 | **8**| | | | |
-| **9**| | | <font style="background-color:#D3D3D3;"><b>TOTAL:</b></font> | <font style="background-color:#D3D3D3;"><b>${total_revenue}</b></font> |
+| **9**| | | <b>TOTAL:</b> | <b>`${total_revenue}`</b> |
 
 ---
 
@@ -54,6 +55,6 @@ This is the most important part of the template. The entire row acts as a bluepr
 -   Row 7 is filled with data from the first item. `A7` becomes `1`, `B7` becomes `Widget Pro`, etc.
 -   Row 8 is filled with data from the second item. `A8` becomes `2`, `B8` becomes `Gadget Plus`, etc.
 -   Row 9 is filled with data from the third item.
-6.  The "TOTAL" row, which was originally at row 9, is now at **row 11**, and all other simple placeholders (like `${report_details.month_name}`) are filled in.
+The "TOTAL" row, which was originally at row 9, is now at **row 11**, and all other simple placeholders (like `${report_details.month_name}`) are filled in.
 
 The final output is a clean, formatted spreadsheet with a dynamically sized table.

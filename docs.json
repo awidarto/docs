@@ -11,6 +11,58 @@
   "navigation": {
     "tabs": [
       {
+        "tab": "DMS",
+        "groups": [
+          {
+            "group": "Mulai",
+            "pages": [
+              "apps/dms-doc/introduction"
+            ]
+          },
+          {
+            "group": "Manfaat Doman-DMS",
+            "pages": [
+              "apps/dms-doc/benefits/index",
+              "apps/dms-doc/benefits/operational-efficiency",
+              "apps/dms-doc/benefits/risk-mitigation",
+              "apps/dms-doc/benefits/collaboration-visibility",
+              "apps/dms-doc/benefits/consistency-professionalism"
+            ]
+          },
+          {
+            "group": "Panduan Pengguna",
+            "pages": [
+              "apps/dms-doc/user-manual/index",
+              "apps/dms-doc/user-manual/getting-started",
+              "apps/dms-doc/user-manual/main-dashboard",
+              "apps/dms-doc/user-manual/core-features",
+              {
+                "group": "Repositori Cerdas & Kode Panggil",
+                "pages": [
+                  "apps/dms-doc/user-manual/repository/index",
+                  "apps/dms-doc/user-manual/repository/call-code-breakdown",
+                  "apps/dms-doc/user-manual/repository/practical-example",
+                  "apps/dms-doc/user-manual/repository/admin-reference-tables"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Mejik AI",
+        "groups": [
+          {
+            "group": "Docling",
+            "pages": [
+              "docling/docling-basic-guide",
+              "docling/laravel-docling-integration",
+              "docling/docling-installation-macos-intel"
+            ]
+          }
+        ]
+      },
+      {
         "tab": "Mejik Core",
         "groups": [
           {
@@ -29,6 +81,16 @@
             ]
           },
           {
+            "group": "Commands",
+            "pages": [
+              "mejik-core/laravel/commands/xlsxconverter",
+              "mejik-core/laravel/commands/docx-data-merge",
+              "mejik-core/laravel/commands/docx-merge-convert",
+              "mejik-core/laravel/commands/xlsx-template-example",
+              "mejik-core/laravel/commands/xlsx-merge-convert"
+            ]
+          },
+          {
             "group": "Commands ( v2 )",
             "pages": [
               "mejik-core/laravel/v2/commands/make-inertia-crud-and-form",
@@ -38,25 +100,26 @@
             ]
           },
           {
-            "group": "Laravel",
+            "group": "MVC ( v2 )",
             "pages": [
-              "mejik-core/laravel/index",
-              "mejik-core/laravel/quickstart",
-              "mejik-core/laravel/development",
-              "mejik-core/laravel/tools/xlsxconverter",
-              "mejik-core/laravel/tools/docx-data-merge",
-              "mejik-core/laravel/tools/docx-merge-convert",
-              "mejik-core/laravel/tools/xlsx-template-example",
-              "mejik-core/laravel/tools/xlsx-merge-convert",
-              "mejik-core/laravel/tools/id/xlsxconverter",
-              "mejik-core/laravel/tools/module-gen/generator",
-              "mejik-core/laravel/tools/module-gen/subgenerator",
-              "mejik-core/laravel/tools/module-gen/guide",
               "mejik-core/laravel/v2/admin-controller-guide-en",
               "mejik-core/laravel/v2/admin-controller-guide-id",
               "mejik-core/laravel/v2/layout-navigation-en",
               "mejik-core/laravel/v2/layout-navigation-id",
               "mejik-core/laravel/v2/navigation-config-guide-en"
+            ]
+          },
+          {
+            "group": "Laravel",
+            "pages": [
+              "mejik-core/laravel/index",
+              "mejik-core/laravel/quickstart",
+              "mejik-core/laravel/development",
+              "mejik-core/laravel/tools/id/xlsxconverter",
+              "mejik-core/laravel/tools/module-gen/generator",
+              "mejik-core/laravel/tools/module-gen/subgenerator",
+              "mejik-core/laravel/tools/module-gen/guide"
+
             ]
           },
           {

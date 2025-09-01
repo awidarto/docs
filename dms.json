@@ -1,0 +1,65 @@
+{
+  "name": "Dokumentasi Doman-DMS",
+  "logo": {
+    "light": "/logo/logo-light.svg",
+    "dark": "/logo/logo-dark.svg"
+  },
+  "favicon": "/logo/favicon.png",
+  "colors": {
+    "primary": "#F97316",
+    "light": "#FF8B38",
+    "dark": "#E3640D",
+    "background": {
+      "light": "#FFFFFF",
+      "dark": "#0D1117"
+    },
+    "anchors": {
+      "from": "#F97316",
+      "to": "#FF8B38"
+    }
+  },
+  "modeToggle": {
+    "default": "light"
+  },
+  "navigation": [
+    {
+      "group": "Mulai",
+      "pages": [
+        "introduction"
+      ]
+    },
+    {
+      "group": "Manfaat Doman-DMS",
+      "pages": [
+        "benefits/index",
+        "benefits/operational-efficiency",
+        "benefits/risk-mitigation",
+        "benefits/collaboration-visibility",
+        "benefits/consistency-professionalism"
+      ]
+    },
+    {
+      "group": "Panduan Pengguna",
+      "pages": [
+        "user-manual/index",
+        "user-manual/getting-started",
+        "user-manual/main-dashboard",
+        "user-manual/core-features",
+        {
+          "group": "Repositori Cerdas & Kode Panggil",
+          "pages": [
+            "user-manual/repository/index",
+            "user-manual/repository/call-code-breakdown",
+            "user-manual/repository/practical-example",
+            "user-manual/repository/admin-reference-tables"
+          ]
+        }
+      ]
+    }
+  ],
+  "footerSocials": {
+    "twitter": "https://twitter.com/mintlify",
+    "github": "https://github.com/mintlify",
+    "linkedin": "https://www.linkedin.com/company/mintlify/"
+  }
+}
