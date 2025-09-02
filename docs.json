@@ -42,12 +42,20 @@
             ]
           },
           {
+            "group": "Converter",
+            "pages": [
+              "mejik-core/laravel/commands/converter/docx-generate-command",
+              "mejik-core/laravel/commands/converter/xlsx-generate-command"
+            ]
+          },
+          {
             "group": "Commands",
             "pages": [
               "mejik-core/laravel/commands/xlsxconverter",
               "mejik-core/laravel/commands/docx-data-merge",
               "mejik-core/laravel/commands/docx-merge-convert",
               "mejik-core/laravel/commands/xlsx-template-example",
+              "mejik-core/laravel/commands/docx-template-example",
               "mejik-core/laravel/commands/xlsx-merge-convert"
             ]
           },
