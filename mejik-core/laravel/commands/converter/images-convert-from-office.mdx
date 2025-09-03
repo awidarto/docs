@@ -1,0 +1,213 @@
+---
+title: "Office Documents to Image Sequence Converter Commands"
+description: "Converting Office documents to image sequence of pages, supports docx, xlsx, pptx, etc."
+---
+
+## English Documentation
+
+### Documentation for `image:convert-from` Artisan Command
+
+#### 1. Overview
+
+This Artisan command provides a powerful utility to convert a wide variety of office documents (`.docx`, `.xlsx`, `.pptx`, `.odt`, etc.) and PDF files into a series of high-quality JPG images. Each page of the source document will be rendered as a separate, sequentially numbered image file (e.g., `0001.jpg`, `0002.jpg`).
+
+The command operates using a two-stage process:
+1.  **PDF Conversion (via LibreOffice):** If the input file is not a PDF, it first uses the LibreOffice suite in headless mode to convert the document into a temporary PDF.
+2.  **Image Rendering (via Ghostscript):** It then uses Ghostscript to process the PDF (either the original or the temporary one) and render each page as an individual JPG image.
+
+#### 2. System Requirements (Prerequisites)
+
+Before using this command, you must install two essential command-line tools on your server and ensure they are accessible from the system's `PATH`.
+
+*   **LibreOffice (or OpenOffice):** Required for converting office documents to PDF. The headless mode is crucial for server-side execution.
+*   **Installation on Debian/Ubuntu:**
+```bash
+sudo apt-get update
+sudo apt-get install libreoffice --no-install-recommends
+        ```
+*   **Ghostscript:** Required for converting PDF pages into images.
+*   **Installation on Debian/Ubuntu:**
+```bash
+sudo apt-get install ghostscript
+        ```
+
+> **Note:** The command in the script uses `soffice`. On some modern systems, the executable is `libreoffice`. You may need to edit the `ImageConvertCommand.php` file to change `soffice` to `libreoffice` if you encounter a "command not found" error.
+
+#### 3. Command Syntax
+
+The command follows a simple structure with three required options.
+
+```bash
+php artisan image:convert-from --in=<path_to_input_file> --out=<path_to_output_folder> --filetype=<file_extension>
+```
+
+**Options:**
+*   `--in`: The absolute or relative path to the source document you want to convert.
+*   `--out`: The absolute or relative path to the **folder** where the output images will be saved. The command will create this folder if it doesn't exist.
+*   `--filetype`: The file extension of the input file (e.g., `docx`, `pdf`, `xlsx`). This helps the command decide whether the LibreOffice conversion step is necessary.
+
+#### 4. Example Usage
+
+##### Example 1: Converting a DOCX file
+```bash
+php artisan image:convert-from \
+--in="storage/app/documents/annual_report.docx" \
+--out="public/converted/annual_report" \
+--filetype="docx"
+```
+*   **Process:** LibreOffice converts `annual_report.docx` to a temporary PDF, then Ghostscript converts that PDF into images inside the `public/converted/annual_report` folder.
+
+##### Example 2: Converting an XLSX (Excel) file
+```bash
+php artisan image:convert-from \
+--in="storage/app/financials/q4_data.xlsx" \
+--out="public/converted/q4_data" \
+--filetype="xlsx"
+```
+*   **Process:** Same as above. LibreOffice handles the spreadsheet layout during its PDF conversion.
+
+##### Example 3: Converting a PDF file directly
+```bash
+php artisan image:convert-from \
+--in="storage/app/pdfs/product_catalog.pdf" \
+--out="public/converted/product_catalog" \
+--filetype="pdf"
+```
+*   **Process:** The command detects the file type is `pdf` and skips the LibreOffice step entirely, proceeding directly to image rendering with Ghostscript.
+
+##### Example 4: Handling a file path with spaces
+Always wrap paths containing spaces in double quotes.
+```bash
+php artisan image:convert-from \
+--in="storage/app/My Documents/Project Proposal.odt" \
+--out="public/converted/project_proposal" \
+--filetype="odt"
+```
+
+#### 5. Expected Output
+
+When you run the command, you will see progress messages in your terminal:
+```
+// For a DOCX file
+$ php artisan image:convert-from --in="storage/app/documents/report.docx" --out="public/converted/report" --filetype="docx"
+Output directory does not exist. Creating: public/converted/report
+Step 1/2: Converting document to a temporary PDF...
+Temporary PDF created: /var/www/html/storage/app/temp/conversions/report.pdf
+Step 2/2: Converting PDF pages to images...
+Cleaned up temporary PDF file.
+✅ Success! Conversion complete. Images are saved in: public/converted/report
+```
+
+After completion, the output folder (`public/converted/report`) will contain:
+```
+0001.jpg
+0002.jpg
+0003.jpg
+...
+```
+
+---
+---
+
+## Bahasa Indonesia Documentation
+
+### Dokumentasi Perintah Artisan `image:convert-from`
+
+#### 1. Gambaran Umum
+
+Perintah Artisan ini menyediakan utilitas untuk mengonversi berbagai jenis dokumen office (`.docx`, `.xlsx`, `.pptx`, `.odt`, dll.) dan file PDF menjadi serangkaian gambar JPG berkualitas tinggi. Setiap halaman dari dokumen sumber akan di-render menjadi file gambar terpisah yang diberi nomor urut (contoh: `0001.jpg`, `0002.jpg`).
+
+Perintah ini bekerja menggunakan proses dua tahap:
+1.  **Konversi ke PDF (melalui LibreOffice):** Jika file input bukan PDF, perintah ini akan menggunakan LibreOffice dalam mode *headless* (tanpa antarmuka) untuk mengonversi dokumen tersebut menjadi file PDF temporer.
+2.  **Render Gambar (melalui Ghostscript):** Selanjutnya, Ghostscript akan digunakan untuk memproses file PDF (baik file asli maupun yang temporer) dan me-render setiap halaman menjadi gambar JPG.
+
+#### 2. Persyaratan Sistem (Prasyarat)
+
+Sebelum menggunakan perintah ini, Anda harus menginstal dua perangkat lunak command-line pada server Anda dan memastikan keduanya dapat diakses melalui `PATH` sistem.
+
+*   **LibreOffice (atau OpenOffice):** Dibutuhkan untuk mengonversi dokumen office ke PDF. Mode *headless* sangat penting untuk eksekusi di sisi server.
+*   **Instalasi pada Debian/Ubuntu:**
+```bash
+sudo apt-get update
+sudo apt-get install libreoffice --no-install-recommends
+        ```
+*   **Ghostscript:** Dibutuhkan untuk mengonversi halaman PDF menjadi gambar.
+*   **Instalasi pada Debian/Ubuntu:**
+```bash
+sudo apt-get install ghostscript
+        ```
+
+> **Catatan:** Perintah di dalam skrip menggunakan `soffice`. Pada beberapa sistem modern, nama eksekusinya adalah `libreoffice`. Anda mungkin perlu mengubah file `ImageConvertCommand.php` dan mengganti `soffice` menjadi `libreoffice` jika terjadi galat "command not found".
+
+#### 3. Sintaks Perintah
+
+Perintah ini memiliki struktur sederhana dengan tiga opsi yang wajib diisi.
+
+```bash
+php artisan image:convert-from --in=<jalur_file_input> --out=<jalur_folder_output> --filetype=<ekstensi_file>
+```
+
+**Opsi:**
+*   `--in`: Jalur absolut atau relatif ke file dokumen sumber yang ingin Anda konversi.
+*   `--out`: Jalur absolut atau relatif ke **folder** tempat gambar hasil konversi akan disimpan. Perintah ini akan membuat folder tersebut jika belum ada.
+*   `--filetype`: Ekstensi file dari file input (contoh: `docx`, `pdf`, `xlsx`). Opsi ini membantu perintah memutuskan apakah langkah konversi via LibreOffice diperlukan.
+
+#### 4. Contoh Penggunaan
+
+##### Contoh 1: Mengonversi file DOCX
+```bash
+php artisan image:convert-from \
+--in="storage/app/documents/laporan_tahunan.docx" \
+--out="public/converted/laporan_tahunan" \
+--filetype="docx"
+```
+*   **Proses:** LibreOffice mengonversi `laporan_tahunan.docx` menjadi PDF temporer, kemudian Ghostscript mengubah PDF tersebut menjadi gambar di dalam folder `public/converted/laporan_tahunan`.
+
+##### Contoh 2: Mengonversi file XLSX (Excel)
+```bash
+php artisan image:convert-from \
+--in="storage/app/financials/data_q4.xlsx" \
+--out="public/converted/data_q4" \
+--filetype="xlsx"
+```
+*   **Proses:** Sama seperti di atas. LibreOffice akan menangani tata letak spreadsheet saat proses konversi ke PDF.
+
+##### Contoh 3: Mengonversi file PDF secara langsung
+```bash
+php artisan image:convert-from \
+--in="storage/app/pdfs/katalog_produk.pdf" \
+--out="public/converted/katalog_produk" \
+--filetype="pdf"
+```
+*   **Proses:** Perintah mendeteksi tipe file adalah `pdf` dan akan melewati tahap LibreOffice, langsung melanjutkan ke proses render gambar dengan Ghostscript.
+
+##### Contoh 4: Menangani jalur file yang mengandung spasi
+Selalu bungkus jalur file yang mengandung spasi dengan tanda kutip ganda.
+```bash
+php artisan image:convert-from \
+--in="storage/app/Dokumen Saya/Proposal Proyek.odt" \
+--out="public/converted/proposal_proyek" \
+--filetype="odt"
+```
+
+#### 5. Hasil yang Diharapkan
+
+Saat Anda menjalankan perintah, Anda akan melihat pesan progres di terminal Anda:
+```
+// Untuk file DOCX
+$ php artisan image:convert-from --in="storage/app/documents/laporan.docx" --out="public/converted/laporan" --filetype="docx"
+Output directory does not exist. Creating: public/converted/laporan
+Step 1/2: Converting document to a temporary PDF...
+Temporary PDF created: /var/www/html/storage/app/temp/conversions/laporan.pdf
+Step 2/2: Converting PDF pages to images...
+Cleaned up temporary PDF file.
+✅ Success! Conversion complete. Images are saved in: public/converted/laporan
+```
+
+Setelah selesai, folder output (`public/converted/laporan`) akan berisi:
+```
+0001.jpg
+0002.jpg
+0003.jpg
+...
+```
