@@ -1,0 +1,431 @@
+---
+title: "File Format Optimizer Commands"
+description: "Formatter & Optimizer post processor for html, blade, js and json file"
+---
+
+## English Documentation
+
+### Artisan Command: `post:process`
+
+This command is a unified post-processor for formatting and optimizing various source files. It acts as a single entry point to run different formatters like Laravel Pint (PHP), Tidy (HTML), Blade Formatter (Blade), and Prettier (JS, TS, Vue, etc.) on your codebase.
+
+---
+
+### 1. Prerequisites & Installation
+
+Before using this command, ensure all required tools are installed.
+
+#### a. Laravel Pint (for PHP files)
+Pint is included with modern Laravel installations. If missing, install it:
+```bash
+composer require laravel/pint --dev
+```
+
+#### b. Tidy CLI (for HTML files)
+This is a system command-line tool.
+*   **Linux (Ubuntu/Debian):** `sudo apt-get install tidy`
+*   **macOS (Homebrew):** `brew install tidy-html5`
+
+#### c. Node.js Tools (for Blade, JS, JSON, TS, & Vue files)
+Install the required formatters via npm:
+```bash
+# For JS, JSON, TS, and Vue files
+npm install --save-dev prettier
+
+# For Blade template files
+npm install --save-dev blade-formatter
+```
+---
+
+### 2. Usage
+
+The command can process either a single file or an entire directory.
+
+**Synopsis:**
+```bash
+php artisan post:process --in=<input_path> --out=<output_path> --filetype=<type>
+```
+
+#### Options
+
+| Option       | Description                                                                 | Example                           |
+| :----------- | :-------------------------------------------------------------------------- | :-------------------------------- |
+| `--in=`      | **Required.** The input file or directory to process.                       | `--in=resources/js`               |
+| `--out=`     | **Required.** The output file or directory where results will be saved.     | `--out=public/dist/js`            |
+| `--filetype=`| **Required.** Supported values: `php`, `blade`, `html`, `js`, `json`, `ts`, `vue`. | `--filetype=vue`                |
+
+---
+
+### 3. Examples
+
+#### a. Processing a Single PHP File
+```bash
+php artisan post:process --in=app/Services/PaymentService.php --out=storage/processed/PaymentService.php --filetype=php
+```
+
+#### b. Processing a Single Blade Template
+```bash
+php artisan post:process --in=resources/views/welcome.blade.php --out=storage/processed/welcome.blade.php --filetype=blade
+```
+
+#### c. Processing an Entire Directory of Vue Components
+This will find all `.vue` files, format them, and save them to the output directory while preserving the original file structure.
+```bash
+php artisan post:process --in=resources/js/components --out=storage/processed/components --filetype=vue
+```
+
+#### d. Processing a TypeScript File
+```bash
+php artisan post:process --in=resources/ts/app.ts --out=storage/processed/app.ts --filetype=ts
+```
+
+***
+
+## Dokumentasi Bahasa Indonesia
+
+### Perintah Artisan: `post:process`
+
+Perintah ini adalah post-processor terpadu untuk memformat dan mengoptimalkan berbagai jenis file sumber. Ia berfungsi sebagai satu pintu masuk untuk menjalankan formatter seperti Laravel Pint (PHP), Tidy (HTML), Blade Formatter (Blade), dan Prettier (JS, TS, Vue, dll.) pada codebase Anda.
+
+---
+
+### 1. Prasyarat & Instalasi
+
+Sebelum menggunakan perintah ini, pastikan semua perangkat yang dibutuhkan telah terinstal.
+
+#### a. Laravel Pint (untuk file PHP)
+Pint sudah termasuk dalam instalasi Laravel modern. Jika belum ada, instal dengan:
+```bash
+composer require laravel/pint --dev
+```
+
+#### b. Tidy CLI (untuk file HTML)
+Ini adalah perangkat command-line sistem.
+*   **Linux (Ubuntu/Debian):** `sudo apt-get install tidy`
+*   **macOS (Homebrew):** `brew install tidy-html5`
+
+#### c. Perangkat Node.js (untuk file Blade, JS, JSON, TS, & Vue)
+Instal formatter yang dibutuhkan melalui npm:
+```bash
+# Untuk file JS, JSON, TS, dan Vue
+npm install --save-dev prettier
+
+# Untuk file template Blade
+npm install --save-dev blade-formatter
+```
+---
+
+### 2. Penggunaan
+
+Perintah ini dapat memproses satu file tunggal atau seluruh direktori.
+
+**Sinopsis:**
+```bash
+php artisan post:process --in=<path_input> --out=<path_output> --filetype=<jenis_file>
+```
+
+#### Opsi
+
+| Opsi         | Deskripsi                                                                   | Contoh                            |
+| :----------- | :-------------------------------------------------------------------------- | :-------------------------------- |
+| `--in=`      | **Wajib.** File atau direktori input yang akan diproses.                    | `--in=resources/js`               |
+| `--out=`     | **Wajib.** File atau direktori output untuk menyimpan hasil.                | `--out=public/dist/js`            |
+| `--filetype=`| **Wajib.** Nilai yang didukung: `php`, `blade`, `html`, `js`, `json`, `ts`, `vue`. | `--filetype=vue`                |
+
+---
+
+### 3. Contoh Penggunaan
+
+#### a. Memproses Satu File PHP
+```bash
+php artisan post:process --in=app/Services/PaymentService.php --out=storage/processed/PaymentService.php --filetype=php
+```
+
+#### b. Memproses Satu Template Blade
+```bash
+php artisan post:process --in=resources/views/welcome.blade.php --out=storage/processed/welcome.blade.php --filetype=blade
+```
+
+#### c. Memproses Seluruh Direktori Komponen Vue
+Perintah ini akan mencari semua file `.vue`, memformatnya, dan menyimpannya ke direktori output dengan mempertahankan struktur file aslinya.
+```bash
+php artisan post:process --in=resources/js/components --out=storage/processed/components --filetype=vue
+```
+
+#### d. Memproses Satu File TypeScript
+```bash
+php artisan post:process --in=resources/ts/app.ts --out=storage/processed/app.ts --filetype=ts
+```
+
+---
+
+### Complete `app/Console/Commands/PostProcessor.php` Command
+
+This is the final, fully-functional code for your command.
+
+```php
+<?php
+
+namespace App\Console\Commands;
+
+use Illuminate\Console\Command;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
+use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use InvalidArgumentException;
+use RuntimeException;
+
+class PostProcessor extends Command
+{
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'post:process {--in= : The input file or directory}
+                                         {--out= : The output file or directory}
+                                         {--filetype= : The type of file to process (html, blade, php, js, json, ts, vue)}';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Optimizes and formats source files (HTML, Blade, PHP, JS, JSON, TS, Vue).';
+
+    /**
+     * The list of supported file types.
+     *
+     * @var array
+     */
+    protected const SUPPORTED_TYPES = ['html', 'blade', 'php', 'js', 'json', 'ts', 'vue'];
+
+    /**
+     * Execute the console command.
+     */
+    public function handle(): int
+    {
+        try {
+            $inPath = $this->getValidatedPath('in');
+            $outPath = $this->option('out');
+            $fileType = $this->getValidatedFileType();
+
+            if (!$outPath) {
+                throw new InvalidArgumentException('The --out option is required.');
+            }
+
+            $this->line("🚀 Starting post-processing for '{$fileType}' files...");
+            $this->line("   - Input:  {$inPath}");
+            $this->line("   - Output: {$outPath}");
+
+            if (File::isFile($inPath)) {
+                $this->processSingleFile($inPath, $outPath, $fileType);
+            } else {
+                $this->processDirectory($inPath, $outPath, $fileType);
+            }
+
+            $this->info("\n✅ Processing complete!");
+            return Command::SUCCESS;
+
+        } catch (InvalidArgumentException | RuntimeException $e) {
+            $this->error($e->getMessage());
+            return Command::FAILURE;
+        }
+    }
+
+    protected function processSingleFile(string $inputFile, string $outputFile, string $fileType): void
+    {
+        $this->info("Processing single file: {$inputFile}");
+        File::ensureDirectoryExists(dirname($outputFile));
+        $content = File::get($inputFile);
+        $processedContent = $this->formatContent($content, $fileType);
+        File::put($outputFile, $processedContent);
+    }
+
+    protected function processDirectory(string $inputDir, string $outputDir, string $fileType): void
+    {
+        $extension = $this->getExtensionForType($fileType);
+        $files = File::allFiles($inputDir);
+
+        $targetFiles = collect($files)->filter(
+            fn ($file) => Str::endsWith($file->getFilename(), $extension)
+        );
+
+        if ($targetFiles->isEmpty()) {
+            $this->warn("No '{$extension}' files found in the input directory.");
+            return;
+        }
+
+        $progressBar = $this->output->createProgressBar($targetFiles->count());
+        $progressBar->start();
+
+        foreach ($targetFiles as $file) {
+            $relativePath = Str::after($file->getPathname(), $inputDir . DIRECTORY_SEPARATOR);
+            $outputFilePath = rtrim($outputDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $relativePath;
+            File::ensureDirectoryExists(dirname($outputFilePath));
+            $content = $file->getContents();
+            $processedContent = $this->formatContent($content, $fileType);
+            File::put($outputFilePath, $processedContent);
+            $progressBar->advance();
+        }
+        $progressBar->finish();
+    }
+
+    /**
+     * Routes the content to the correct formatter based on file type.
+     */
+    protected function formatContent(string $content, string $fileType): string
+    {
+        return match ($fileType) {
+            'php'   => $this->formatWithPint($content),
+            'blade' => $this->formatWithBladeFormatter($content),
+            'html'  => $this->formatWithTidy($content),
+            'js', 'json', 'ts', 'vue' => $this->formatWithPrettier($content, $fileType),
+            default => $content,
+        };
+    }
+
+    /**
+     * Formats PHP code using Laravel Pint.
+     */
+    protected function formatWithPint(string $content): string
+    {
+        $pintPath = base_path('vendor/bin/pint');
+        if (!File::exists($pintPath)) {
+            throw new RuntimeException("Laravel Pint not found. Please run 'composer require laravel/pint --dev'.");
+        }
+
+        $tempFile = tempnam(sys_get_temp_dir(), 'pint_') . '.php';
+        File::put($tempFile, $content);
+
+        try {
+            $process = new Process([$pintPath, $tempFile]);
+            $process->mustRun();
+            return File::get($tempFile);
+        } finally {
+            if (File::exists($tempFile)) {
+                File::delete($tempFile);
+            }
+        }
+    }
+
+    /**
+     * Formats Blade files using the blade-formatter npm package.
+     */
+    protected function formatWithBladeFormatter(string $content): string
+    {
+        $formatterPath = base_path('node_modules/.bin/blade-formatter');
+        if (!File::exists($formatterPath)) {
+            throw new RuntimeException("blade-formatter not found. Please run 'npm install --save-dev blade-formatter'.");
+        }
+
+        $process = new Process([
+            $formatterPath,
+            '--stdin',
+            '--indent-size', '4',
+            '--wrap-attributes', 'auto'
+        ]);
+        $process->setInput($content);
+
+        try {
+            $process->mustRun();
+            return $process->getOutput();
+        } catch (ProcessFailedException $exception) {
+            throw new RuntimeException("Blade Formatter failed with error: \n" . $exception->getProcess()->getErrorOutput());
+        }
+    }
+
+    /**
+     * Formats HTML content using the Tidy CLI tool.
+     */
+    protected function formatWithTidy(string $content): string
+    {
+        if (empty(shell_exec('command -v tidy'))) {
+             throw new RuntimeException("The 'Tidy' CLI tool is not installed or not in your system's PATH.");
+        }
+        $command = [
+            'tidy', '-q', '--indent', 'auto', '--indent-spaces', '4',
+            '--wrap', '200', '--output-xhtml', 'yes', '--tidy-mark', 'no',
+            '--force-output', 'yes',
+        ];
+        $process = new Process($command);
+        $process->setInput($content);
+        try {
+            $exitCode = $process->run();
+            if ($exitCode > 1) {
+                throw new ProcessFailedException($process);
+            }
+            return $process->getOutput();
+        } catch (ProcessFailedException $exception) {
+            throw new RuntimeException(
+                "Tidy CLI failed with a critical error: \n" . $exception->getProcess()->getErrorOutput()
+            );
+        }
+    }
+
+    /**
+     * Formats JS, JSON, TS, or Vue content using Prettier.
+     */
+    protected function formatWithPrettier(string $content, string $type): string
+    {
+        $prettierPath = base_path('node_modules/.bin/prettier');
+        if (!File::exists($prettierPath)) {
+            throw new RuntimeException("Prettier not found. Please run 'npm install --save-dev prettier'.");
+        }
+
+        $parser = match ($type) {
+            'js'   => 'babel',
+            'json' => 'json',
+            'ts'   => 'typescript',
+            'vue'  => 'vue',
+            default => throw new InvalidArgumentException("No Prettier parser configured for type '{$type}'."),
+        };
+
+        $process = new Process([$prettierPath, '--parser', $parser]);
+        $process->setInput($content);
+        try {
+            $process->mustRun();
+            return $process->getOutput();
+        } catch (ProcessFailedException $exception) {
+            throw new RuntimeException("Prettier failed with error: \n" . $exception->getProcess()->getErrorOutput());
+        }
+    }
+
+    protected function getValidatedPath(string $optionName): string
+    {
+        $path = $this->option($optionName);
+        if (!$path) {
+            throw new InvalidArgumentException("The --{$optionName} option is required.");
+        }
+        if (!File::exists($path)) {
+            throw new InvalidArgumentException("The specified input path does not exist: {$path}");
+        }
+        return $path;
+    }
+
+    protected function getValidatedFileType(): string
+    {
+        $fileType = $this->option('filetype');
+        if (!$fileType) {
+            throw new InvalidArgumentException('The --filetype option is required.');
+        }
+        if (!in_array($fileType, self::SUPPORTED_TYPES)) {
+            throw new InvalidArgumentException("Unsupported file type '{$fileType}'. Supported types are: " . implode(', ', self::SUPPORTED_TYPES));
+        }
+        return $fileType;
+    }
+
+    protected function getExtensionForType(string $fileType): string
+    {
+        return match ($fileType) {
+            'blade' => '.blade.php',
+            'ts'    => '.ts',
+            'vue'   => '.vue',
+            default => '.' . $fileType,
+        };
+    }
+}
+```
+
+---

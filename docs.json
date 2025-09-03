@@ -7,7 +7,7 @@
     "light": "#07C983",
     "dark": "#15803D"
   },
-  "favicon": "/logo/fav.png",
+  "favicon": "/logo/mejik-fav.png",
   "navigation": {
     "tabs": [
       {
@@ -46,6 +46,12 @@
             "pages": [
               "mejik-core/laravel/commands/converter/docx-generate-command",
               "mejik-core/laravel/commands/converter/xlsx-generate-command"
+            ]
+          },
+          {
+            "group": "Utility",
+            "pages": [
+              "mejik-core/laravel/commands/utility/source-file-optimizer"
             ]
           },
           {
@@ -202,8 +208,8 @@
     }
   },
   "logo": {
-    "light": "/logo/mejik.png",
-    "dark": "/logo/mejik.png"
+    "light": "/logo/mejik-logo.png",
+    "dark": "/logo/mejik-logo.png"
   },
   "navbar": {
     "links": [
