@@ -3,181 +3,94 @@ title: "Office Documents to PDF Converter Commands"
 description: "Converting Office documents to pdf, supports docx, xlsx, pptx"
 ---
 
-## English Documentation
+### English Documentation
 
-### **Documentation: `pdf:convert-from` Artisan Command**
+#### **Overview**
+This is a utility command that converts a wide variety of office documents (e.g., `.docx`, `.xlsx`, `.odt`) into a PDF file. It uses the LibreOffice suite in headless (server) mode to perform the conversion. The command is designed to work in a cloud environment, supporting inputs from URLs and outputs to S3-compatible storage.
 
-This command provides a powerful server-side utility to convert a wide variety of office and text documents into PDF files. It acts as a wrapper for the **LibreOffice** command-line interface, ensuring high-fidelity conversions.
+#### **Prerequisites**
+*   **LibreOffice:** Must be installed on the server and accessible via the system `PATH`. On Debian/Ubuntu, install with `sudo apt-get install libreoffice`. The command uses the `soffice` binary, which may be `libreoffice` on some systems; you may need to edit the script if necessary.
+*   **S3/Minio Driver (for remote output):** `composer require league/flysystem-aws-s3-v3 "^3.0"`
 
----
+#### **Command Usage**
 
-### **1. Prerequisites: Installing LibreOffice**
-
-This command requires LibreOffice to be installed on the machine where you run the command (your local development machine or your production server).
-
-#### **On a Server (Linux - Headless)**
-*   **Ubuntu / Debian:**
+##### **Syntax**
 ```bash
-sudo apt-get update
-sudo apt-get install -y libreoffice-common libreoffice-writer libreoffice-calc libreoffice-impress --no-install-recommends
-    ```
-*   **CentOS / RHEL:**
+php artisan pdf:convert-from \
+--in=<path_or_url> \
+--out=<destination_path> \
+--filetype=<file_ext> \
+[--disk=<disk_name>]
+```
+
+##### **Options**
+*   `--in`: The source document. Can be a local file path or a full URL.
+*   `--out`: The destination path for the output PDF. If `--disk` is not used, this is a local file path. If `--disk` is used, this is the path within that disk's bucket.
+*   `--filetype`: The file extension of the input file (e.g., `docx`, `xlsx`). This is a hint for the conversion process.
+*   `--disk`: (Optional) The name of the Laravel filesystem disk to use for output.
+
+##### **Example Usage**
+
+**1. Local to Local**
 ```bash
-sudo yum install -y libreoffice-headless libreoffice-writer libreoffice-calc libreoffice-impress
-    ```
+php artisan pdf:convert-from \
+--in="storage/app/reports/AnnualReport.docx" \
+--out="public/pdfs/AnnualReport.pdf" \
+--filetype="docx"
+```
 
-#### **On a Desktop (for Local Development)**
-*   **Windows:** Install from the [official website](https://www.libreoffice.org/download/download/) and add `C:\Program Files\LibreOffice\program` to your system's `PATH`.
-*   **macOS (via Homebrew):** `brew install --cask libreoffice` and then create a symlink: `sudo ln -s /Applications/LibreOffice.app/Contents/MacOS/soffice /usr/local/bin/soffice`.
-
----
-
-### **2. Command Signature**
-
+**2. URL Input to S3/Minio Output**
 ```bash
-php artisan pdf:convert-from --in=<input file> --out=<output file> --filetype=<filetype>
+php artisan pdf:convert-from \
+--in="https://company-files.com/quarterly.xlsx" \
+--out="reports/2024/quarterly.pdf" \
+--filetype="xlsx" \
+--disk="minio"
 ```
 
 ---
 
-### **3. Options**
+### Bahasa Indonesia Documentation
 
-*   `--in=<input file>`
-*   **Description:** The absolute path to the source document you want to convert.
-*   **Required:** Yes
+#### **Gambaran Umum**
+Ini adalah perintah utilitas yang mengonversi berbagai jenis dokumen office (misalnya, `.docx`, `.xlsx`, `.odt`) menjadi file PDF. Perintah ini menggunakan LibreOffice suite dalam mode *headless* (server) untuk melakukan konversi. Perintah ini dirancang untuk bekerja di lingkungan cloud, mendukung input dari URL dan output ke penyimpanan yang kompatibel dengan S3.
 
-*   `--out=<output file>`
-*   **Description:** The absolute path where the converted PDF file should be saved. The filename must end with `.pdf`.
-*   **Required:** Yes
+#### **Prasyarat**
+*   **LibreOffice:** Harus terinstal di server dan dapat diakses melalui `PATH` sistem. Di Debian/Ubuntu, instal dengan `sudo apt-get install libreoffice`. Perintah ini menggunakan biner `soffice`, yang mungkin bernama `libreoffice` di beberapa sistem; Anda mungkin perlu mengedit skrip jika diperlukan.
+*   **Driver S3/Minio (untuk output jarak jauh):** `composer require league/flysystem-aws-s3-v3 "^3.0"`
 
-*   `--filetype=<filetype>`
-*   **Description:** The file type of the input document.
-*   **Required:** Yes
-*   **Allowed Values:**
-*   **Microsoft Office:** `docx`, `doc`, `rtf`, `xlsx`, `xls`, `csv`, `pptx`, `ppt`
-*   **OpenDocument:** `odt`, `ods`, `odp`
-*   **Other Formats:** `html`, `htm`, `txt`, `wpd`
+#### **Penggunaan Perintah**
 
----
-
-### **4. Usage Examples**
-
-*   **Convert a modern Word Document (.docx):**
+##### **Sintaks**
 ```bash
-php artisan pdf:convert-from --in="/path/to/quarterly-report.docx" --out="/path/to/public/quarterly-report.pdf" --filetype=docx
-    ```
+php artisan pdf:convert-from \
+--in=<path_atau_url> \
+--out=<path_tujuan> \
+--filetype=<ekstensi_file> \
+[--disk=<nama_disk>]
+```
 
-*   **Convert a legacy Word Document (.doc):**
+##### **Opsi**
+*   `--in`: Dokumen sumber. Bisa berupa path file lokal atau URL lengkap.
+*   `--out`: Path tujuan untuk file PDF output. Jika `--disk` tidak digunakan, ini adalah path file lokal. Jika `--disk` digunakan, ini adalah path di dalam bucket disk tersebut.
+*   `--filetype`: Ekstensi file dari file input (misalnya, `docx`, `xlsx`). Ini adalah petunjuk untuk proses konversi.
+*   `--disk`: (Opsional) Nama disk filesystem Laravel yang akan digunakan untuk output.
+
+##### **Contoh Penggunaan**
+
+**1. Lokal ke Lokal**
 ```bash
-php artisan pdf:convert-from --in="/path/to/archive/old-manual.doc" --out="/path/to/public/old-manual.pdf" --filetype=doc
-    ```
+php artisan pdf:convert-from \
+--in="storage/app/laporan/LaporanTahunan.docx" \
+--out="public/pdfs/LaporanTahunan.pdf" \
+--filetype="docx"
+```
 
-*   **Convert an OpenDocument Text file (.odt):**
+**2. Input URL ke Output S3/Minio**
 ```bash
-php artisan pdf:convert-from --in="/path/to/open-document.odt" --out="/path/to/public/open-document.pdf" --filetype=odt
-    ```
-
-*   **Convert a CSV file:**
-```bash
-php artisan pdf:convert-from --in="/path/to/data.csv" --out="/path/to/public/data-table.pdf" --filetype=csv
-    ```
-
----
-
-### **5. Troubleshooting**
-
-*   **`soffice: command not found`:** Ensure LibreOffice is installed and its program directory is in your system's `PATH`.
-*   **Permission Denied:** The user running PHP must have execute permissions for `soffice` and write permissions for the `--out` directory.
-*   **Font Issues:** Install any required fonts on the server to ensure the PDF renders correctly.
-*   **Timeouts:** For very large files, you may need to uncomment and adjust the `$process->setTimeout(3600);` line in the command code to allow more time for conversion.
-
----
-
-
-    ## Dokumentasi Bahasa Indonesia
-
-    ### **Dokumentasi: Perintah Artisan `pdf:convert-from`**
-
-    Perintah ini menyediakan utilitas sisi server yang andal untuk mengonversi berbagai macam format dokumen office dan teks menjadi file PDF. Perintah ini berfungsi sebagai *wrapper* untuk antarmuka baris perintah (CLI) **LibreOffice**, memastikan konversi dengan kualitas tinggi.
-
-    ---
-
-    ### **1. Prasyarat: Instalasi LibreOffice**
-
-    Perintah ini memerlukan LibreOffice untuk terpasang di mesin tempat Anda menjalankan perintah (baik di mesin pengembangan lokal Anda maupun di server produksi).
-
-    #### **Di Server (Linux - Headless)**
-    *   **Ubuntu / Debian:**
-    ```bash
-    sudo apt-get update
-    sudo apt-get install -y libreoffice-common libreoffice-writer libreoffice-calc libreoffice-impress --no-install-recommends
-    ```
-    *   **CentOS / RHEL:**
-    ```bash
-    sudo yum install -y libreoffice-headless libreoffice-writer libreoffice-calc libreoffice-impress
-    ```
-
-    #### **Di Desktop (untuk Pengembangan Lokal)**
-    *   **Windows:** Instal dari [situs web resmi](https://www.libreoffice.org/download/download/) dan tambahkan `C:\Program Files\LibreOffice\program` ke `PATH` sistem Anda.
-    *   **macOS (via Homebrew):** `brew install --cask libreoffice` lalu buat symlink: `sudo ln -s /Applications/LibreOffice.app/Contents/MacOS/soffice /usr/local/bin/soffice`.
-
-    ---
-
-    ### **2. Signature Perintah (Command Signature)**
-
-    ```bash
-    php artisan pdf:convert-from --in=<file input> --out=<file output> --filetype=<tipe file>
-    ```
-
-    ---
-
-    ### **3. Opsi (Options)**
-
-    *   `--in=<file input>`
-    *   **Deskripsi:** Path absolut ke dokumen sumber yang ingin Anda konversi.
-    *   **Wajib:** Ya
-
-    *   `--out=<file output>`
-        *   **Deskripsi:** Path absolut tempat file PDF hasil konversi akan disimpan. Nama file harus diakhiri dengan `.pdf`.
-        *   **Wajib:** Ya
-
-        *   `--filetype=<tipe file>`
-            *   **Deskripsi:** Tipe file dari dokumen input.
-            *   **Wajib:** Ya
-            *   **Nilai yang Diizinkan:**
-            *   **Microsoft Office:** `docx`, `doc`, `rtf`, `xlsx`, `xls`, `csv`, `pptx`, `ppt`
-            *   **OpenDocument:** `odt`, `ods`, `odp`
-            *   **Format Lain:** `html`, `htm`, `txt`, `wpd`
-
-            ---
-
-            ### **4. Contoh Penggunaan**
-
-            *   **Mengonversi Dokumen Word modern (.docx):**
-            ```bash
-            php artisan pdf:convert-from --in="/path/to/laporan-kuartal.docx" --out="/path/to/public/laporan-kuartal.pdf" --filetype=docx
-            ```
-
-            *   **Mengonversi Dokumen Word versi lama (.doc):**
-            ```bash
-            php artisan pdf:convert-from --in="/path/to/arsip/manual-lama.doc" --out="/path/to/public/manual-lama.pdf" --filetype=doc
-            ```
-
-            *   **Mengonversi file OpenDocument Text (.odt):**
-            ```bash
-            php artisan pdf:convert-from --in="/path/to/dokumen-terbuka.odt" --out="/path/to/public/dokumen-terbuka.pdf" --filetype=odt
-            ```
-
-            *   **Mengonversi file CSV:**
-            ```bash
-            php artisan pdf:convert-from --in="/path/to/data.csv" --out="/path/to/public/tabel-data.pdf" --filetype=csv
-            ```
-
-            ---
-
-            ### **5. Troubleshooting**
-
-            *   **`soffice: command not found`:** Pastikan LibreOffice terinstal dan direktorinya ada di dalam `PATH` sistem Anda.
-            *   **Permission Denied (Izin Ditolak):** Pengguna yang menjalankan PHP harus memiliki izin eksekusi untuk `soffice` dan izin tulis untuk direktori `--out`.
-            *   **Masalah Font:** Instal semua font yang diperlukan di server untuk memastikan PDF ditampilkan dengan benar.
-            *   **Timeout:** Untuk file yang sangat besar, Anda mungkin perlu menghapus komentar dan menyesuaikan baris `$process->setTimeout(3600);` di dalam kode perintah untuk memberikan waktu konversi yang lebih lama.
+php artisan pdf:convert-from \
+--in="https://file-perusahaan.com/kuartal.xlsx" \
+--out="laporan/2024/kuartal.pdf" \
+--filetype="xlsx" \
+--disk="minio"
+```

@@ -1,0 +1,72 @@
+{
+    "company": {
+        "name": "Innovate Solutions Inc.",
+        "address": "123 Tech Avenue, Silicon Valley, CA 94043",
+        "phone": "+1-202-555-0191",
+        "email": "contact@innovatesolutions.com",
+        "logo_url": "https://i.imgur.com/g1D48p8.png"
+    },
+    "customer": {
+        "name": "John Doe",
+        "company": "Doe Construction",
+        "address": "456 Builder's Way, Metropolis, NY 10001"
+    },
+    "invoice_id": "INV-2023-001",
+    "issue_date": "2023-11-15",
+    "due_date": "2023-12-15",
+    "items": [
+        {
+            "description": "Website Development & Design",
+            "quantity": 1,
+            "unit_price": "2500.00",
+            "total": "2500.00"
+        },
+        {
+            "description": "Hosting Services (1 Year)",
+            "quantity": 1,
+            "unit_price": "300.00",
+            "total": "300.00"
+        },
+        {
+            "description": "SEO & Marketing Package (Monthly Retainer)",
+            "quantity": 3,
+            "unit_price": "150.00",
+            "total": "450.00"
+        },
+        {
+            "description": "Content Management System Training",
+            "quantity": 4,
+            "unit_price": "75.00",
+            "total": "300.00"
+        }
+    ],
+    "grand_total": "3550.00",
+    "terms": [
+        {
+            "text": "Payment is due within 30 days of the issue date."
+        },
+        {
+            "text": "A late fee of 1.5% per month will be applied to any overdue accounts."
+        },
+        {
+            "text": "Please make all checks payable to Innovate Solutions Inc."
+        },
+        {
+            "text": "For any questions concerning this invoice, please contact the billing department."
+        }
+    ],
+    "kondisi": [
+        {
+            "text": "Payment is due within 30 days of the issue date."
+        },
+        {
+            "text": "A late fee of 1.5% per month will be applied to any overdue accounts."
+        },
+        {
+            "text": "Please make all checks payable to Innovate Solutions Inc."
+        },
+        {
+            "text": "For any questions concerning this invoice, please contact the billing department."
+        }
+    ]
+}

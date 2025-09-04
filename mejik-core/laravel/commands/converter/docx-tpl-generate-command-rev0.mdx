@@ -2,11 +2,6 @@
 title: "DOCX Generator by Template Commands"
 description: "From DOCX template to docx and pdf"
 ---
-[Sample Template DOCX](/dl/invoice_template_gen.docx)
-
-[Sample JSON Data](/dl/invoice_data.json)
-
-## 1. Documentation for `generate:from-docx`
 
 ### English Documentation
 
@@ -92,6 +87,8 @@ ${terms_block}
 ${terms_item.seq}. ${terms_item.text}
 ${/terms_block}
         ```
+*   **Best Practice:** To avoid document corruption, it is highly recommended to use **Shift+Enter** for line breaks inside the `_block` definition in your Word document.
+
 ---
 
 ### Bahasa Indonesia Documentation
@@ -178,151 +175,6 @@ ${terms_block}
 ${terms_item.seq}. ${terms_item.text}
 ${/terms_block}
         ```
-Of course. Having a concrete, copy-pasteable example for both the template and the data is the best way to understand the conventions and get started quickly.
-
-Here are the complete examples that work with the final version of the `DocxTplGenerator` command.
+*   **Praktik Terbaik:** Untuk menghindari kerusakan dokumen, sangat disarankan untuk menggunakan **Shift+Enter** untuk membuat baris baru di dalam definisi `_block` pada dokumen Word Anda.
 
 ---
-
-### 1. Example JSON Data File
-
-Save this content as `invoice_data.json`. This file structure covers all the features of the command: simple values, nested objects, an image URL, a repeating table, and a repeating list.
-
-`invoice_data.json`
-```json
-{
-  "invoice_id": "INV-2024-001",
-  "issue_date": "2023-11-20",
-  "due_date": "2023-12-20",
-  "grand_total": "3550.00",
-  "company": {
-    "name": "Innovate Solutions Inc.",
-    "address": "123 Tech Avenue, Silicon Valley, CA 94043",
-    "phone": "+1-202-555-0191",
-    "email": "contact@innovatesolutions.com",
-    "logo_url": "https://i.imgur.com/g1D48p8.png"
-  },
-  "customer": {
-    "name": "John Doe",
-    "company": "Doe Construction",
-    "address": "456 Builder's Way, Metropolis, NY 10001"
-  },
-  "items": [
-    {
-      "description": "Website Development & Design",
-      "quantity": 1,
-      "unit_price": "2500.00",
-      "total": "2500.00"
-    },
-    {
-      "description": "Hosting Services (1 Year)",
-      "quantity": 1,
-      "unit_price": "300.00",
-      "total": "300.00"
-    },
-    {
-      "description": "SEO & Marketing Package (Monthly)",
-      "quantity": 3,
-      "unit_price": "150.00",
-      "total": "450.00"
-    },
-    {
-      "description": "Content Management System Training",
-      "quantity": 4,
-      "unit_price": "75.00",
-      "total": "300.00"
-    }
-  ],
-  "terms": [
-    {
-      "text": "Payment is due within 30 days of the issue date."
-    },
-    {
-      "text": "A late fee of 1.5% per month will be applied to any overdue accounts."
-    },
-    {
-      "text": "Please make all checks payable to Innovate Solutions Inc."
-    },
-    {
-      "text": "For any questions concerning this invoice, please contact the billing department."
-    }
-  ]
-}
-```
-
----
-
-### 2. Example DOCX Template Content
-
-This is the raw text content for your `invoice_template.docx` file.
-
-#### **Instructions:**
-1.  **Open** a blank document in Microsoft Word or LibreOffice.
-2.  **Copy** the entire text block below and **paste** it into your document.
-3.  **Apply Your Styling:** Use Word's tools to apply fonts, colors, and borders. The generator will preserve all your styling. The layout below uses tables for alignment, which is a common and effective method.
-4.  **Save** the file as `invoice_template.docx`.
-
-#### **Copy-Pasteable Template Content:**
-
-```text
-(Create a 2-column table here for the header)
-
-(Column 1)
-${company.logo_url}
-${company.name}
-${company.address}
-Phone: ${company.phone}
-Email: ${company.email}
-
-(Column 2 - Right Aligned)
-INVOICE
-Invoice #: ${invoice_id}
-Date Issued: ${issue_date}
-Due Date: ${due_date}
-
-
-------------------------------------------------------------------
-
-Bill To:
-${customer.name}
-${customer.company}
-${customer.address}
-
-
-(Create a 4-column table here for the invoice items. Style it with borders, etc.)
-
-(Header Row)
-Description	Quantity	Unit Price	Total Price
-
-(Template Row - this is the row that will be cloned)
-${item.description}	${item.quantity}	${item.unit_price}	${item.total}
-
-(Footer Row)
-(leave empty)	(leave empty)	GRAND TOTAL	${grand_total}
-
-
-------------------------------------------------------------------
-
-Terms & Conditions
-
-(This is the list block. Use Shift+Enter between these lines for best results)
-${terms_block}
-${terms_item.seq}. ${terms_item.text}
-${/terms_block}
-
-```
-
----
-
-### 3. Convention Checklist (Summary)
-
-This table explicitly links the JSON data structure to the required template placeholders.
-
-| Data Type | Example JSON Key/Path | Required Template Placeholder |
-| :--- | :--- | :--- |
-| **Simple Value** | `"invoice_id": "..."` | `${invoice_id}` |
-| **Nested Value** | `"customer": { "name": "..." }` | `${customer.name}` |
-| **Image** | `"company": { "logo_url": "..." }` | `${company.logo_url}` |
-| **Table Row** (`items` key) | `items[0].description` | `${item.description}` |
-| **List Item** (`terms` key) | `terms[0].text` | `${terms_item.text}` |
-| **List Sequence** (`terms` key) | (Auto-generated) | `${terms_item.seq}` |
