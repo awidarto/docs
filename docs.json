@@ -42,12 +42,18 @@
             ]
           },
           {
+            "group": "Use Case",
+            "pages": [
+              "mejik-core/laravel/commands/converter/case/invoice-generator-with-template.mdx"
+            ]
+          },
+          {
             "group": "Converter",
             "pages": [
               "mejik-core/laravel/commands/converter/pdf-thumbnail-generator",
               "mejik-core/laravel/commands/converter/pdf-convert-from-office",
               "mejik-core/laravel/commands/converter/images-convert-from-office",
-              "mejik-core/laravel/commands/converter/docx-generate-command",
+              "mejik-core/laravel/commands/converter/docx-tpl-generate-command",
               "mejik-core/laravel/commands/converter/xlsx-generate-command"
             ]
           },

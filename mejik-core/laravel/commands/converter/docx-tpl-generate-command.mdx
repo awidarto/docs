@@ -1,0 +1,133 @@
+---
+title: "DOCX Generator by Template Commands"
+description: "From DOCX template to docx and pdf"
+---
+
+## English Documentation (Final Version)
+
+### Documentation for `generate:from-docx` Artisan Command
+
+#### 1. Overview
+
+This Artisan command is a powerful, generic document generator. It creates a styled DOCX file by merging data from a JSON file into a DOCX template. It can also optionally convert the generated DOCX file into a PDF. The command operates based on simple, clear conventions, allowing it to handle nested data, repeating table rows, lists, and images automatically.
+
+#### 2. Prerequisites
+
+*   **PHPWord Library:** `composer require phpoffice/phpword`
+*   **(For PDF Output):** The `pdf:convert-from` command must exist and be functional, which requires **LibreOffice** to be installed on the server.
+
+#### 3. Command Usage
+
+##### 3.1. Syntax
+```bash
+php artisan generate:from-docx --data=<path_to_json> --tpl=<path_to_template> --out=<path_to_output> [--pdf]
+```
+
+##### 3.2. Example
+```bash
+php artisan generate:from-docx \
+--data="storage/app/data/invoice_data.json" \
+--tpl="storage/app/templates/invoice_template.docx" \
+--out="storage/app/output/Invoice-2024.docx" \
+--pdf
+```
+
+#### 4. Template and Data Conventions
+
+You must follow these conventions for the generator to work correctly.
+
+##### 4.1. Simple & Nested Data
+A JSON object like `"customer": { "name": "John" }` corresponds to a placeholder `${customer.name}` in the template.
+
+##### 4.2. Images
+An image is identified in the JSON data, and the template placeholder must match.
+*   **Convention:** The placeholder in the template **must exactly match** the full key path in the JSON.
+*   **Example:** If your JSON has `"company": { "logo_url": "http://..." }`, your template **must** use the placeholder `${company.logo_url}`.
+*   The code will automatically detect that the value is an image if the key ends in `_url` (case-insensitive) or if the URL string ends in a common image extension (`.png`, `.jpg`, etc.).
+
+##### 4.3. Repeating Data: Tables
+This convention is for standard multi-column data, like invoice line items.
+*   **Data Format:** An array of objects with any keys (e.g., `description`, `quantity`).
+*   **Template Convention:** The placeholders in the repeating table row **must** be prefixed with `item.`.
+*   **Example:** For a JSON key `"items"`, the template must use `${item.description}`, `${item.quantity}`, etc.
+
+##### 4.4. Repeating Data: Lists
+This convention is for simple, single-line repeating items, like a list of terms.
+*   **Data Format:** An array of objects, where each object **must** have a `"text"` key: `[{ "text": "First point." }, { "text": "Second point." }]`.
+*   **Template Convention:**
+1.  Create a block named after your JSON key, with a `_block` suffix. Example: for the `"terms"` key, use `${terms_block}` and `${/terms_block}`.
+2.  Inside the block, define the template for one list item. The placeholders **must** be prefixed with `<key>_item.`.
+3.  The command automatically provides a sequence number via the `.seq` placeholder.
+*   **Example:** For the `"terms"` key, the template block must be:
+```text
+${terms_block}
+${terms_item.seq}. ${terms_item.text}
+${/terms_block}
+    ```
+*   **Best Practice:** To avoid document corruption, it is highly recommended to use **Shift+Enter** for line breaks inside the `_block` definition in your Word document.
+
+---
+---
+
+## Bahasa Indonesia Documentation (Final Version)
+
+### Dokumentasi Perintah Artisan `generate:from-docx`
+
+#### 1. Gambaran Umum
+
+Perintah Artisan ini adalah generator dokumen generik yang canggih. Perintah ini membuat file DOCX bergaya dengan menggabungkan data dari file JSON ke dalam sebuah template DOCX. Perintah ini juga secara opsional dapat mengonversi file DOCX yang dihasilkan menjadi PDF. Perintah ini beroperasi berdasarkan konvensi yang sederhana dan jelas, memungkinkannya menangani data bertingkat, baris tabel berulang, daftar (list), dan gambar secara otomatis.
+
+#### 2. Prasyarat
+
+*   **Library PHPWord:** `composer require phpoffice/phpword`
+*   **(Untuk Output PDF):** Perintah `pdf:convert-from` harus ada dan berfungsi, yang memerlukan **LibreOffice** terinstal di server.
+
+#### 3. Penggunaan Perintah
+
+##### 3.1. Sintaks
+```bash
+php artisan generate:from-docx --data=<jalur_ke_json> --tpl=<jalur_ke_template> --out=<jalur_ke_output> [--pdf]
+```
+
+##### 3.2. Contoh
+```bash
+php artisan generate:from-docx \
+--data="storage/app/data/data_faktur.json" \
+--tpl="storage/app/templates/template_faktur.docx" \
+--out="storage/app/output/Faktur-2024.docx" \
+--pdf
+```
+
+#### 4. Konvensi Template dan Data
+
+Anda harus mengikuti konvensi berikut agar generator berfungsi dengan benar.
+
+##### 4.1. Data Sederhana & Bertingkat
+Objek JSON seperti `"pelanggan": { "nama": "John" }` berkorespondensi dengan placeholder `${pelanggan.nama}` di dalam template.
+
+##### 4.2. Gambar
+Gambar diidentifikasi di dalam data JSON, dan placeholder di template harus cocok.
+*   **Konvensi:** Placeholder di dalam template **harus sama persis** dengan path key lengkap di dalam JSON.
+*   **Contoh:** Jika JSON Anda memiliki `"company": { "logo_url": "http://..." }`, template Anda **harus** menggunakan placeholder `${company.logo_url}`.
+*   Kode akan secara otomatis mendeteksi bahwa nilainya adalah gambar jika key diakhiri dengan `_url` (tidak sensitif huruf besar/kecil) atau jika string URL diakhiri dengan ekstensi gambar umum (`.png`, `.jpg`, dll.).
+
+##### 4.3. Data Berulang: Tabel
+Konvensi ini digunakan untuk data multi-kolom standar, seperti rincian item faktur.
+*   **Format Data:** Sebuah array objek dengan key apa pun (misalnya, `description`, `quantity`).
+*   **Konvensi Template:** Placeholder di dalam baris tabel yang berulang **harus** diawali dengan `item.`.
+*   **Contoh:** Untuk key JSON `"items"`, template harus menggunakan `${item.description}`, `${item.quantity}`, dll.
+
+##### 4.4. Data Berulang: Daftar (List)
+Konvensi ini untuk item berulang yang sederhana dan satu baris, seperti daftar syarat dan ketentuan.
+*   **Format Data:** Sebuah array objek, di mana setiap objek **harus** memiliki key `"text"`: `[{ "text": "Poin pertama." }, { "text": "Poin kedua." }]`.
+*   **Konvensi Template:**
+1.  Buat sebuah blok yang dinamai sesuai key JSON Anda, dengan akhiran `_block`. Contoh: untuk key `"terms"`, gunakan `${terms_block}` dan `${/terms_block}`.
+2.  Di dalam blok, definisikan template untuk satu item daftar. Placeholder **harus** diawali dengan `<key>_item.`.
+3.  Perintah ini secara otomatis menyediakan nomor urut melalui placeholder `.seq`.
+*   **Contoh:** Untuk key `"terms"`, blok template harus seperti ini:
+```text
+${terms_block}
+${terms_item.seq}. ${terms_item.text}
+${/terms_block}
+    ```
+*   **Praktik Terbaik:** Untuk menghindari kerusakan dokumen, sangat disarankan untuk menggunakan **Shift+Enter** untuk membuat baris baru di dalam definisi `_block` pada dokumen Word Anda.
