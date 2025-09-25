@@ -153,7 +153,9 @@
             "pages": [
               "projects/fas/account-payable-module",
               "projects/fas/account-payable-aging",
-              "projects/fas/account-receivable-module"
+              "projects/fas/account-receivable-module",
+              "projects/fas/chart-of-accounts",
+              "projects/fas/coa-cost-revenue-map"
             ]
           },
           {
