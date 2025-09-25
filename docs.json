@@ -16,9 +16,22 @@
           {
             "group": "Docling",
             "pages": [
-              "docling/docling-basic-guide",
-              "docling/laravel-docling-integration",
-              "docling/docling-installation-macos-intel"
+              "ai-dev/docling/docling-basic-guide",
+              "ai-dev/docling/laravel-docling-integration",
+              "ai-dev/docling/docling-installation-macos-intel"
+            ]
+          },
+          {
+            "group": "GraphRAG",
+            "pages": [
+              "ai-dev/graph-rag/graph-rag-system",
+              "ai-dev/graph-rag/hl-embedding-laravel",
+              "ai-dev/graph-rag/hl-embedding-laravel-expanded",
+              "ai-dev/graph-rag/graph-rag-laravel",
+              "ai-dev/graph-rag/dev-graph-rag-laravel",
+              "ai-dev/graph-rag/hl-gemini-embedding-laravel",
+              "ai-dev/graph-rag/hl-neo4j-kg-vector-laravel",
+              "ai-dev/graph-rag/hl-neo4j-kg-acl-laravel"
             ]
           }
         ]
@@ -61,6 +74,15 @@
             "group": "Utility",
             "pages": [
               "mejik-core/laravel/commands/utility/source-file-optimizer"
+            ]
+          },
+          {
+            "group": "Importer",
+            "pages": [
+              "mejik-core/laravel/commands/importer/header-detail-data-import",
+              "mejik-core/laravel/commands/importer/header-detail-data-export",
+              "mejik-core/laravel/commands/importer/adv-header-detail-data-import",
+              "mejik-core/laravel/commands/importer/header-detail-data-import-export"
             ]
           },
           {
@@ -109,10 +131,8 @@
           {
             "group": "Vue",
             "pages": [
-              "mejik-core/vue/index",
-              "mejik-core/vue/quickstart",
-              "mejik-core/vue/development",
-              "mejik-core/vue/components/inlineediting"
+              "mejik-core/vue/components/inlineediting",
+              "mejik-core/vue/components/treedatatable"
             ]
           }
         ]
@@ -131,9 +151,18 @@
           {
             "group": "FAS",
             "pages": [
-              "projects/fas/index",
-              "projects/fas/quickstart",
-              "projects/fas/development"
+              "projects/fas/account-payable-module",
+              "projects/fas/account-payable-aging",
+              "projects/fas/account-receivable-module"
+            ]
+          },
+          {
+            "group": "Asset",
+            "pages": [
+              "projects/asset/asset-management-basic",
+              "projects/asset/core-design-erd",
+              "projects/asset/mongodb-implementation-design",
+              "projects/asset/eloquent-implementation-design"
             ]
           }
         ]
