@@ -7,7 +7,10 @@ Excellent request. This is a crucial step in making the Chart of Accounts (CoA) 
 
 Here is a design for a mapping table, complete with examples and principles.
 
+## **General Concept**
+
 ### **I. Defining the Cost and Revenue Centers**
+
 
 First, let's establish a set of hypothetical Cost and Revenue Centers for our enterprise. The codes are essential for system integration (e.g., in an ERP system).
 
@@ -159,4 +162,92 @@ Struktur pemetaan ini memungkinkan tim keuangan untuk menghasilkan laporan yang 
 *   Laporan perbandingan anggaran vs. realisasi pengeluaran yang terperinci untuk Pusat Biaya "Departemen Pemasaran".
 *   Analisis pusat biaya mana yang paling banyak mengeluarkan biaya perjalanan dinas.
 
+## WCP as example
+
+### Storyline & Narrative
+
+WCP is a company structured by departments & business unit like this :
+- MPS, Man Power Services , this is SBU that generates revenue from Manpower outsourcing, activities will be grouped by project
+- EPCIC , SBU that generates revenue from equipment rental plus manpower as operator, activities will be grouped by project
+- BD, Business Development, unit responsible for finding leads, tender & bid participation and winning process, up to awarded contract for MPS, EPCIC and SCM ( non human resource procurements ) projects
+- SCM , SBU as well as supporting unit , mainly dealing with vendor relation, procurement and fulfilment
+- HCGA ( Human Capital & General Affairs ), supporting unit for GA & HR activities, including EPCIC HR management
+- FAT, Finance and Accounting department
+
+design possible table structure for RC / CC to CoA mapping
+
+-----
+
+Of course. This is an excellent real-world scenario that highlights the need for a robust and dimensional accounting structure. Given your company's structure with SBUs and support units, the design must clearly distinguish between direct costs (for profitability analysis) and overhead costs.
+
+Here is a design for the table structure, mapping your specific departments and SBUs to the Chart of Accounts (CoA).
+
+### **Step 1: Finalize the Cost Center (CC) and Revenue Center (RC) Codes**
+
+First, we'll assign clear, logical codes to each unit. This is the foundation of the system. Note that SCM has a dual role, so we can handle it with one code but use it in different contexts, or assign two for ultimate clarity. Let's assign two to be explicit.
+
+| Code | Center Name | Type | Description |
+| :--- | :--- | :--- | :--- |
+| **RC-MPS** | Man Power Services | Revenue Center | SBU generating revenue from manpower projects. |
+| **RC-EPCIC** | EPCIC | Revenue Center | SBU generating revenue from equipment & manpower projects. |
+| **RC-SCM** | SCM (External Services) | Revenue Center | SBU generating revenue from external procurement services. |
+| **CC-BD** | Business Development | Cost Center | Support unit for sales and contract acquisition. (Indirect Cost) |
+| **CC-SCM** | SCM (Internal Support) | Cost Center | Support unit for internal procurement activities. (Indirect Cost) |
+| **CC-HCGA** | Human Capital & General Affairs| Cost Center | Support unit for HR and GA functions. (Overhead) |
+| **CC-FAT** | Finance and Accounting | Cost Center | Support unit for finance and accounting. (Overhead) |
+
+**Important Addition: The Project Dimension**
+Your business is project-driven. The `Project Code` (e.g., `PROJ-24-001`) is a separate, mandatory dimension for all transactions related to **RC-MPS** and **RC-EPCIC**.
+
+### **Step 2: Design the Core Mapping Table Structure**
+
+Here is a possible table structure. This isn't just a static list; it's a guide for how to code transactions in your ERP or accounting software.
+
+| **Transaction Description** | **Center Code** | **Project Code** (if applicable) | **CoA Account No.** | **CoA Account Name** | **Value Filled In (Debit)** | **Value Filled In (Credit)** | **Notes / Rationale** |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **--- SBU: Man Power Services (MPS) ---** | | | | | | | |
+| Invoice client for manpower on Project Alpha | **RC-MPS** | `PROJ-24-001` | 42100 | Service - Consulting Fees | | ✓ | Revenue is earned by the SBU for a specific project. |
+| Pay salary for outsourced staff on Project Alpha | **RC-MPS** | `PROJ-24-001` | 52000 | COGS - Direct Labor | ✓ | | This is a **direct cost** of revenue, essential for project profitability. |
+| Purchase safety gear specifically for Project Alpha | **RC-MPS** | `PROJ-24-001` | 51000 | COGS - Cost of Materials | ✓ | | Another direct cost tied directly to the project and SBU. |
+| | | | | | | | |
+| **--- SBU: EPCIC ---** | | | | | | | |
+| Invoice client for equipment rental & operator | **RC-EPCIC** | `PROJ-24-002` | 41000 | Product Sales Revenue | | ✓ | Could use a dedicated revenue account like "Rental Revenue". |
+| Pay salary for equipment operator on Project Beta | **RC-EPCIC** | `PROJ-24-002` | 52000 | COGS - Direct Labor | ✓ | | Direct cost of revenue for the EPCIC SBU. |
+| Record monthly depreciation of equipment on Project Beta | **RC-EPCIC** | `PROJ-24-002`| 53000 | COGS - Manufacturing Overhead | ✓ | | Depreciation of revenue-generating equipment is a direct cost (COGS). |
+| Perform maintenance on rented equipment | **RC-EPCIC** | `PROJ-24-002` | 53000 | COGS - Manufacturing Overhead | ✓ | | Maintenance is a direct cost of keeping the rental asset operational. |
+| | | | | | | | |
+| **--- SBU: Supply Chain Management (SCM) ---** | | | | | | | |
+| Invoice external client for procurement services | **RC-SCM** | (N/A) | 42100 | Service - Consulting Fees | | ✓ | SCM acting as an SBU and earning external revenue. |
+| Pay salary for SCM staff working on external client project| **RC-SCM** | (N/A) | 52000 | COGS - Direct Labor | ✓ | | The labor cost associated with earning that external revenue. |
+| | | | | | | | |
+| **--- Support Unit: Business Development (BD) ---** | | | | | | | |
+| Pay salary for BD team | **CC-BD** | (N/A) | 61100 | Salaries & Wages (S&M) | ✓ | | This is a sales & marketing expense, an **indirect cost**. |
+| Pay tender participation fee | **CC-BD** | (N/A) | 65000 | Dues & Subscriptions (S&M) | ✓ | | Cost of sales activity, mapped to the BD cost center. |
+| Business travel for client meetings | **CC-BD** | (N/A) | 63000 | Travel & Entertainment (S&M) | ✓ | | Another cost of sales. |
+| | | | | | | | |
+| **--- Support Unit: SCM (Internal) ---** | | | | | | | |
+| Pay salary for internal procurement staff | **CC-SCM** | (N/A) | 81200 | Admin Salaries & Wages (G&A) | ✓ | | This is an overhead/G&A cost for supporting internal operations. |
+| Pay for SCM software subscription | **CC-SCM** | (N/A) | 84100 | Software Licenses (G&A) | ✓ | | An operational cost for the internal SCM support function. |
+| | | | | | | | |
+| **--- Support Unit: HCGA & FAT ---** | | | | | | | |
+| Pay salary for HR Manager | **CC-HCGA**| (N/A) | 81200 | Admin Salaries & Wages (G&A) | ✓ | | Classic overhead cost. |
+| Pay head office rent | **CC-HCGA**| (N/A) | 82100 | Rent Expense (G&A) | ✓ | | General Affairs expense. |
+| Pay salary for Accountant | **CC-FAT** | (N/A) | 81200 | Admin Salaries & Wages (G&A) | ✓ | | Classic overhead cost. |
+| Pay annual audit fees | **CC-FAT** | (N/A) | 83200 | Accounting & Audit Fees (G&A) | ✓ | | G&A professional fees. |
+| | | | | | | | |
+| **--- Advanced Scenario: Cost Allocation ---** | | | | | | | |
+| **HCGA staff dedicated to EPCIC operations** | **RC-EPCIC** | (N/A) | 81200 | Admin Salaries & Wages | ✓ | | Instead of overhead, this cost is **directly charged** to the EPCIC SBU because the resource is dedicated. This improves accuracy. |
+
+### **Key Principles and Benefits of This Structure**
+
+1.  **Clear Profitability Analysis:** By mapping all revenues and **direct costs** (COGS) to the SBUs (`RC-MPS`, `RC-EPCIC`), you can instantly generate a Gross Profit report for each SBU and even for each project.
+*   **SBU Gross Profit = (All Credits to 4xxxx tagged `RC-XXX`) - (All Debits to 5xxxx tagged `RC-XXX`)**
+
+2.  **Overhead Cost Control:** All indirect and overhead costs are neatly captured in the supporting Cost Centers (`CC-BD`, `CC-HCGA`, etc.). You can run budget vs. actual reports for each support department to manage spending effectively.
+
+3.  **Flexibility for Allocation:** While support costs are initially captured in their own CCs, this structure allows for a secondary step: **cost allocation**. At the end of the month, you could allocate the total costs of `CC-BD` to `RC-MPS` and `RC-EPCIC` based on a fair metric (e.g., percentage of revenue won), giving you a fully-loaded SBU Net Profit figure.
+
+4.  **Handles Dual Roles:** The structure explicitly separates SCM's revenue-generating activities from its internal support function, preventing cost distortion and providing a clear view of its performance as both an SBU and a support unit.
+
+This design provides the granularity needed for project-based accounting while maintaining a clear, high-level view of SBU performance and overall corporate overhead.
 
