@@ -2,6 +2,7 @@
 title: 'Chart of Accounts'
 description: 'Standard Enterprise Chart of Accounts'
 ---
+## Chart of Accounts (CoA) for Entreprise
 
 Here is a comprehensive, standard Chart of Accounts (CoA) designed for an enterprise.
 
@@ -420,3 +421,99 @@ Berikut adalah rincian akun-akunnya. `(H)` menandakan akun induk atau *header*, 
 *   **Sediakan Pelatihan:** Latih semua karyawan yang terlibat dalam mengkodekan beban atau pendapatan tentang cara menggunakan CoA baru dan segmen dimensionalnya dengan benar.
 
 Bagan Akun Standar ini menyediakan fondasi yang kuat dan skalabel untuk sistem keuangan perusahaan mana pun, memungkinkan pelaporan resmi dan analisis manajemen internal yang kuat.
+
+## CoA Structure for Financial Reports
+
+Excellent question. This moves from a simple list of accounts to the intelligent "engine" that drives automated financial reporting. By adding metadata for report mapping and calculation rules directly into the Chart of Accounts structure, you create a single source of truth that governs how financial statements are generated.
+
+Here is a design for a CoA table structure that incorporates these advanced features.
+
+### **I. The Advanced CoA Table Structure**
+
+We will expand the basic CoA with columns specifically designed for reporting logic.
+
+**Table Name: `Dim_ChartOfAccounts`**
+
+| Column Name | Data Type | Description | Example |
+| :--- | :--- | :--- | :--- |
+| **`Account_Code`** | `VARCHAR(10)` | **Primary Key.** The unique identifier for the account. | `12900` |
+| `Account_Name` | `VARCHAR(255)`| The human-readable name of the account. | `Allowance for Doubtful Accounts` |
+| `Account_Type` | `ENUM` | The fundamental accounting category. | `Asset` |
+| | `('Asset', 'Liability', 'Equity', 'Revenue', 'Expense')`| | |
+| `Normal_Balance` | `ENUM('Debit', 'Credit')` | The side of the account where the balance is normally found. Crucial for Trial Balance logic. | `Credit` (for a contra-asset) |
+| `Is_Posting_Account` | `BOOLEAN` | `TRUE` if transactions can be posted directly to this account. `FALSE` for header/summary accounts. | `TRUE` |
+| `Parent_Account_Code` | `VARCHAR(10)` | Foreign key to `Account_Code` to create a hierarchy for drill-down and roll-ups. `NULL` for top-level accounts. | `12000` |
+| **`FS_Map_Statement`** | `ENUM('BS', 'PL', 'NA')` | **Report Mapper:** Maps the account to the Financial Statement (Balance Sheet, Profit & Loss, or Not Applicable). | `BS` |
+| **`FS_Map_Section`** | `VARCHAR(100)` | **Report Mapper:** The major section on the statement. | `Current Assets` |
+| **`FS_Map_Line`** | `VARCHAR(100)` | **Report Mapper:** The specific line item on the statement. Allows grouping multiple accounts into one line. | `Net Accounts Receivable` |
+| **`Rollup_Operator`** | `ENUM('ADD', 'SUBTRACT')` | **Calculation Rule:** Defines how this account's balance affects its parent line/section total. Default is `ADD`. | `SUBTRACT` |
+| `Description` | `TEXT` | A detailed definition of the account's purpose for the internal CoA dictionary. | `Contra-asset representing estimated uncollectible trade receivables.`|
+
+---
+
+### **II. Example: Populating the `Dim_ChartOfAccounts` Table**
+
+Here’s how some key accounts from our previous design would look in this new structure. This example truly demonstrates the power of the new columns.
+
+| Account_Code | Account_Name | Account_Type | Normal_Balance | Is_Posting_Account | Parent_Account_Code | FS_Map_Statement | FS_Map_Section | FS_Map_Line | Rollup_Operator |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| `10000` | Current Assets | Asset | Debit | FALSE | `NULL` | BS | Current Assets | (Header) | ADD |
+| `12000` | Accounts Receivable | Asset | Debit | FALSE | `10000` | BS | Current Assets | Net Accounts Receivable | ADD |
+| `12100` | Accounts Receivable - Trade | Asset | Debit | TRUE | `12000` | BS | Current Assets | Net Accounts Receivable | ADD |
+| **`12900`** | **Allowance for Doubtful Accounts**| Asset | Credit | TRUE | `12000` | BS | Current Assets | Net Accounts Receivable | **SUBTRACT** |
+| `33000` | Retained Earnings | Equity | Credit | TRUE | `30000` | BS | Equity | Retained Earnings | ADD |
+| `40000` | Operating Revenue | Revenue | Credit | FALSE | `NULL` | PL | Revenue | (Header) | ADD |
+| `41100` | Sales - Product Line A | Revenue | Credit | TRUE | `40000` | PL | Revenue | Product Sales Revenue | ADD |
+| **`48100`** | **Sales Returns & Allowances** | Revenue | Debit | TRUE | `40000` | PL | Revenue | Net Sales | **SUBTRACT** |
+| `80000` | General & Administrative Exp | Expense | Debit | FALSE | `NULL` | PL | Operating Expenses | (Header) | ADD |
+| `81100` | Executive Salaries | Expense | Debit | TRUE | `80000` | PL | Operating Expenses | General & Administrative | ADD |
+| `81200` | Admin Salaries & Wages | Expense | Debit | TRUE | `80000` | PL | Operating Expenses | General & Administrative | ADD |
+| **`99999`** | **Net Income** | Equity | Credit | FALSE | `NULL` | **BS** | Equity | Current Year Net Income | ADD |
+
+---
+
+### **III. How This Structure Drives Financial Reporting**
+
+Your reporting engine (whether in an ERP, BI tool, or even a sophisticated spreadsheet) would use this table as a blueprint.
+
+#### **1. Generating a Trial Balance**
+
+1.  Calculate the final balance for every account in the journal entries table where `Is_Posting_Account = TRUE`.
+2.  For each account, retrieve its `Normal_Balance` from the `Dim_ChartOfAccounts` table.
+3.  Place the final balance in the Debit or Credit column of the Trial Balance report based on its normal balance.
+4.  Sum the Debit and Credit columns. They must be equal.
+
+#### **2. Generating a Profit & Loss (Income Statement)**
+
+1.  **Filter:** Select all accounts where `FS_Map_Statement = 'PL'`.
+2.  **Group & Order:** Group the results by `FS_Map_Section`, then by `FS_Map_Line`. Order them logically (Revenue first, then COGS, then Operating Expenses, etc.).
+3.  **Calculate:**
+*   For each `FS_Map_Line`, calculate the line total.
+*   Iterate through each account mapped to that line.
+*   Get the account's balance from the journal entries.
+*   Apply the **`Rollup_Operator`**:
+*   If `ADD`, `Line_Total += Account_Balance`.
+*   If `SUBTRACT`, `Line_Total -= Account_Balance`.
+*   **Example:** The "Net Sales" line would be calculated as `SUM(Balances of Sales Accounts) - SUM(Balances of Sales Returns & Allowances Accounts)`.
+4.  **Calculate Subtotals:** Calculate Gross Profit (Revenue - COGS), Operating Income, and finally Net Income.
+
+#### **3. Generating a Balance Sheet**
+
+The logic is identical to the P&L, but with a different filter.
+
+1.  **Filter:** Select all accounts where `FS_Map_Statement = 'BS'`.
+2.  **Group & Order:** Group by `FS_Map_Section` (Current Assets, Non-Current Assets, Current Liabilities, etc.) and then by `FS_Map_Line`.
+3.  **Calculate:** Use the `Rollup_Operator` to calculate each line item total.
+*   **Example:** The "Net Accounts Receivable" line is calculated by summing the balance of `12100` and *subtracting* the balance of `12900`.
+4.  **Integrate Net Income:** The calculated Net Income from the P&L report is programmatically pulled and displayed on the Balance Sheet under Equity (as mapped for account `99999` in the example).
+5.  **Verify:** The final report must validate the accounting equation: **Total Assets = Total Liabilities + Total Equity**. The structure ensures this.
+
+### **Benefits of This Design**
+
+*   **Automation:** Financial statements can be generated automatically and instantly at any time.
+*   **Consistency:** All reports are built from the same logic, ensuring consistency across the board.
+*   **Flexibility:** To change how a report looks (e.g., move an account from one line to another), you only need to update the mapping in this single table, not recode the entire reporting logic.
+*   **Clarity:** It clearly defines how contra-accounts should be treated, removing ambiguity during report generation.
+*   **Auditability:** Auditors can easily see the direct mapping from general ledger accounts to the financial statement lines.
+
+

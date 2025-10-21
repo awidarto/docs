@@ -40,6 +40,13 @@
         "tab": "Mejik Core",
         "groups": [
           {
+            "group": "Developer Guide",
+            "pages": [
+              "mejik-core/laravel/guide/mongodb-date-timezone",
+              "mejik-core/laravel/guide/mongodb-date-timezone-advanced"
+            ]
+          },
+          {
             "group": "Installation",
             "pages": [
               "mejik-core/installation/index",
