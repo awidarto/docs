@@ -134,11 +134,18 @@
               "mejik-core/laravel/tools/module-gen/guide"
 
             ]
-          },
+          }
+        ]
+      },
+      {
+        "tab": "Mejik Vue",
+        "groups": [
           {
             "group": "Vue",
             "pages": [
+              "mejik-core/vue/components/sse-notification-dropdown",
               "mejik-core/vue/components/advanced-repeater-form",
+              "mejik-core/vue/components/tiptap-quill-editor",
               "mejik-core/vue/components/inlineediting",
               "mejik-core/vue/components/treedatatable"
             ]
