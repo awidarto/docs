@@ -62,6 +62,13 @@
             ]
           },
           {
+            "group": "Framework",
+            "pages": [
+              "mejik-core/laravel/framework/queue-events",
+              "mejik-core/laravel/framework/sse-notification"
+            ]
+          },
+          {
             "group": "Use Case",
             "pages": [
               "mejik-core/laravel/commands/converter/case/invoice-generator-with-template.mdx"
@@ -70,6 +77,8 @@
           {
             "group": "Converter",
             "pages": [
+              "mejik-core/laravel/commands/converter/pdf-thumbnail-watermark",
+              "mejik-core/laravel/commands/converter/pdf-thumbnail-watermark-id",
               "mejik-core/laravel/commands/converter/pdf-thumbnail-generator",
               "mejik-core/laravel/commands/converter/pdf-convert-from-office",
               "mejik-core/laravel/commands/converter/images-convert-from-office",
